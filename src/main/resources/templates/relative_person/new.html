@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Создание карточки родственника сотрудника</title>
+
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+
+            <!-- Success message -->
+            <div th:if="${param.success}">
+                <div class="alert alert-info">
+                    Создание карточки родственника сотрудника
+                </div>
+            </div>
+
+            <div th:if="${param.errors}">
+                <div class="alert alert-info">
+                    Ошибки при создании карточки родственника сотрудника
+                </div>
+            </div>
+
+            <h2> Создание карточки сотрудника </h2>
+            <form th:action="@{'/employee/' + ${employeeId} + '/relative/create'}" method="post" th:object="${person}">
+
+                <div class="form-group">
+                    <label class="control-label" for="surname">Фамилия</label>
+                    <input id="surname" class="form-control" th:field="*{surname}" required autofocus="autofocus"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="name">Имя</label>
+                    <input id="name" class="form-control" th:field="*{name}" required autofocus="autofocus"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="middleName">Отчество</label>
+                    <input id="middleName" class="form-control" th:field="*{middleName}" autofocus="autofocus"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="birthday">День рождения</label>
+                    <input id="birthday" value="" th:field="*{birthday}" th:name="*{birthday}" type="date" class="form-control" placeholder="Дата" autofocus="autofocus"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="relationship">Степень родства</label>
+                    <select id="relationship" class="form-control" name="relationship" th:field="*{relationship}">
+                        <option th:each="relationship : ${relationshipList}"
+                                th:value="${relationship.getName()}"
+                                th:selected="${relationship.getName()}"
+                                th:text="${relationship.getName()}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">Создать карточку родственника сотрудника</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

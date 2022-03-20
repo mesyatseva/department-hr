@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::body}, 'form')}">
+<head>
+    <meta charset="UTF-8">
+    <title>Список родственников</title>
+
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+</head>
+<body>
+
+<div class="container-fluid" style="margin-top: 20px">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="panel panel-primary">
+
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-md-9 ">
+                            <h1 class="panel-title">Список родственников</h1>
+                        </div>
+                        <div class="col-md-3">
+                            <a class="btn btn-default" href="#" th:href="@{'/employee/' + ${employeeId} + '/relative/new'}"
+                               role="button">Новый родственник</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-body" th:if="${list.size() > 0}">
+                    <div class="table-responsive">
+                        <table class="table table-hover ">
+                            <tbody>
+                            <tr>
+                                <th>Фамилия</th>
+                                <th>Имя</th>
+                                <th>Отчество</th>
+                                <th>Дата рождения</th>
+                                <th>Степень родства</th>
+                            </tr>
+                            <tr th:each="person : ${list}">
+                                <td th:text="${person.surname}">Иванов</td>
+                                <td th:text="${person.name}">Иван</td>
+                                <td th:text="${person.middleName}">Петрович</td>
+                                <td th:text="${#dates.format(person.birthday, 'dd.MM.yyyy')}">2020-05-08</td>
+                                <td th:text="${person.relationship}">Друг</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="panel-body" th:if="${list.size() == 0}">
+                    <h2>Отсутствует информация о родственниках</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+</body>
+</html>

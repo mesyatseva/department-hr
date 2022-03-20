@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Штатное расписание</title>
+
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div th:if="${staff != null}" class="col-md-9 col-md-offset-3" th:object="${staff}">
+
+            <h2> Профиль сотрудника </h2>
+
+            <div class="form-group">
+                <label class="control-label" for="department">Департамент</label>
+                <p id="department" class="form-control" th:text="*{department}">Департамент</p>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label" for="position">Должность</label>
+                <p id="position" class="form-control" th:text="*{position}">Должность</p>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label" for="employeeNumber">Количество сотрудников</label>
+                <p id="employeeNumber" class="form-control" th:text="*{employeeNumber}">Количество сотрудников</p>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label" for="minSalary">Минимальная вилка</label>
+                <p id="minSalary" class="form-control" th:text="*{minimalSalary}">Минимальная вилка</p>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label" for="maxSalary">Максимальная вилка</label>
+                <p id="maxSalary" class="form-control" th:text="*{maximalSalary}">Максимальная вилка</p>
+            </div>
+        </div>
+
+        <div th:if="${staff == null}" class="col-md-9 col-md-offset-3">
+            <div class="form-group">
+                <h2 th:text="${notFound}">Отсутствует штаное распиание - id</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

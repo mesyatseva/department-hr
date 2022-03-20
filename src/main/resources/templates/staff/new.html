@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Создание карточки штатного расписания</title>
+
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+
+            <h2> Создание карточки сотрудника </h2>
+            <form th:action="@{'/staff/create'}" method="post" th:object="${staff}">
+
+                <div class="form-group">
+                    <label class="control-label" for="department">Департамент</label>
+                    <select id="department" class="form-control" name="department" th:field="*{department}">
+                        <option th:each="department : ${departmentList}"
+                                th:value="${department.getName()}"
+                                th:selected="${department.getName()}"
+                                th:text="${department.getName()}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="position">Должность</label>
+                    <select id="position" class="form-control" name="position" th:field="*{position}">
+                        <option th:each="position : ${positionList}"
+                                th:value="${position.getName()}"
+                                th:selected="${position.getName()}"
+                                th:text="${position.getName()}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="employeeNumber">Количество сотрудников</label>
+                    <input id="employeeNumber" class="form-control" th:field="*{employeeNumber}" required autofocus="autofocus"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="minSalary">Минимальная вилка, руб.</label>
+                    <input id="minSalary" class="form-control" th:field="*{minimalSalary}" required autofocus="autofocus"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="maxSalary">Максимальная вилка,</label>
+                    <input id="maxSalary" class="form-control" th:field="*{maximalSalary}" required autofocus="autofocus"/>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">Создать штатное расписание</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
