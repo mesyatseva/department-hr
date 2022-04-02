@@ -1,10 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:x-transition="http://www.w3.org/1999/xhtml"
+        layout:decorate="~{layout/layout}"
+        th:with="activeMenuItem='dismissal'" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.ultraq.net.nz/thymeleaf/layout ">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Dismissal Documents</title>
 </head>
 <body>
+
+<div layout:fragment="page-content">
+
+    <!-- tag::create-button[] -->
+    <div th:replace="fragments/titles :: title-with-button(#{document.dismissal}, #{document.add}, @{/documents/dismissal/new}, 'add-user-button')"
+         sec:authorize="hasAuthority('HR')"></div>
+    <!-- end::create-button[] -->
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+        <div class="py-4">
+            <div class="flex flex-col">
+                <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+                    <div class="align-middle inline-block min-w-full shadow overflow-hidden rounded-md sm:rounded-lg border-b border-gray-200">
+                        <table id="users-table" class="min-w-full">
+                            <thead>
+                            <!-- tag::tr[] -->
+                            <tr>
+                                <th th:replace="fragments/table :: header(#{document.id})"></th>
+                                <th th:replace="fragments/table :: header(#{document.createAt})"></th>
+                                <th th:replace="fragments/table :: header(#{document.order})"></th>
+                                <th th:replace="fragments/table :: header(title=#{document.employee})"></th>
+                                <th th:replace="fragments/table :: header(#{document.boss})"></th>
+                                <th th:replace="fragments/table :: header(#{document.status})"></th>
+                                <th th:replace="fragments/table :: header(#{document.department})"></th>
+                                <th th:replace="fragments/table :: header(#{document.position})"></th>
+                            </tr>
+                            <!-- end::tr[] -->
+                            </thead>
+                            <!--                            <tbody>-->
+                            <!--                             tag::tr-body[] -->
+                            <!--                            <tr class="bg-white" th:each="employee : ${list}">-->
+                            <!--                                <td th:replace="fragments/table :: data(contents=${employee.surname},primary=true)"></td>-->
+                            <!--                                <td th:replace="fragments/table :: data(contents=${employee.name})"></td>-->
+                            <!--                                <td th:replace="fragments/table :: data(contents=${employee.middleName})"></td>-->
+                            <!--                                <td th:replace="fragments/table :: date(date=${employee.birthday})"></td>-->
+                            <!--                                <td th:replace="fragments/table :: data(contents=${employee.department})"></td>-->
+                            <!--                                <td th:replace="fragments/table :: data(contents=${employee.position})"></td>-->
+                            <!--                            </tr>-->
+                            <!-- end::tr-body[] -->
+                            <!--                            </tbody>-->
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
 
 </body>
 </html>

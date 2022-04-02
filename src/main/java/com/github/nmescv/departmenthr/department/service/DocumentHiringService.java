@@ -11,6 +11,7 @@ import com.github.nmescv.departmenthr.department.repository.EmployeeRepository;
 import com.github.nmescv.departmenthr.security.entity.Role;
 import com.github.nmescv.departmenthr.security.entity.User;
 import com.github.nmescv.departmenthr.security.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -18,6 +19,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+
+@Slf4j
 @Service
 public class DocumentHiringService {
 
@@ -35,6 +38,13 @@ public class DocumentHiringService {
         this.documentHiringConverter = documentHiringConverter;
     }
 
+    /**
+     * HR - все документы
+     * BOSS - начальник может увидеть документы только своих подчиненных
+     *
+     * @param username табельный номер сотрудника
+     * @return список документов
+     */
     public List<DocumentHiringDto> findAll(String username) {
 
         Employee employee = employeeRepository.findByTabelNumber(username);
@@ -47,21 +57,24 @@ public class DocumentHiringService {
             return null;
         }
 
-        List<Role> roles = user.getRoles();
-        if (roles.toString().contains("HR_ROLE")) {
-            return documentHiringRepository
-                    .findAll()
-                    .stream()
-                    .map(documentHiringConverter::toDto)
-                    .collect(Collectors.toList());
+        for (Role role : user.getRoles()) {
+            if (role.getName().equals(RoleDict.HR_ROLE)) {
+                return documentHiringRepository
+                        .findAll()
+                        .stream()
+                        .map(documentHiringConverter::toDto)
+                        .collect(Collectors.toList());
+            }
         }
 
-        if (roles.toString().contains(RoleDict.BOSS_ROLE)) {
-            return documentHiringRepository
-                    .findAllByBoss(employee)
-                    .stream()
-                    .map(documentHiringConverter::toDto)
-                    .collect(Collectors.toList());
+        for (Role role : user.getRoles()) {
+            if (role.getName().equals(RoleDict.BOSS_ROLE)) {
+                return documentHiringRepository
+                        .findAllByBoss(employee)
+                        .stream()
+                        .map(documentHiringConverter::toDto)
+                        .collect(Collectors.toList());
+            }
         }
 
         return null;

@@ -10,16 +10,16 @@ import java.util.Date;
 @AllArgsConstructor
 public class DocumentHiringDto {
 
-    private Long id;
-    private Date createdAt;
-    private String orderNumber;
+    private Long id;                        // +
+    private Date createdAt;                 // +
+    private String orderNumber;             // +
     private Long employeeId;
     private Long bossId;
-    private Long hr;
-    private String documentStatus;
+    private Long hr;                        // +
+    private String documentStatus;          // +
     private String department;
     private String position;
-    private Date hiringDate;
+    private Date hiringDate;                // +
     private Double salary;
-    private Boolean isApproved;
+    private Boolean isApproved;             // -
 }
