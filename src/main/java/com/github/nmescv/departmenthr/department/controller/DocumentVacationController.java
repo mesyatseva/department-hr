@@ -41,7 +41,8 @@ public class DocumentVacationController {
         model.addAttribute("list", documentVacationService.findAll(principal.getName()));
         return "document_vacation/all_documents";
     }
-        ;
+
+    ;
 
     @GetMapping("/new")
     @Secured(EMPLOYEE_ROLE)
@@ -67,31 +68,47 @@ public class DocumentVacationController {
 
     @GetMapping("/{id}")
     @Secured({EMPLOYEE_ROLE, BOSS_ROLE, HR_ROLE})
-    public String showById(@PathVariable("id") Long id) {
+    public String showById(Model model,
+                           @PathVariable("id") Long id,
+                           Principal principal) {
+        DocumentVacationDto documentVacationDto = documentVacationService.showById(id, principal.getName());
+        if (documentVacationDto == null) {
+            String notFound = "Отсутствует документ на отпуск с номером - " + id;
+            model.addAttribute("notFound", notFound);
+        }
+        model.addAttribute("document", documentVacationDto);
         return "document_vacation/document_profile";
     }
 
-//    @GetMapping
-//    @Secured(BOSS_ROLE)
-//    public String showVacationDocumentApprovalForm() {
-//        return "document_vacation/approval_by_boss";
-//    }
-//
-//    @GetMapping
-//    @Secured(BOSS_ROLE)
-//    public String approveOrDeclineVacationOfEmployee() {
-//        return "redirect:/document/vacation";
-//    }
-//
-//    @GetMapping
-//    @Secured(HR_ROLE)
-//    public String showFinalDocumentVacationForm() {
-//        return "document_vacation/close_by_hr";
-//    }
-//
-//    @GetMapping
-//    @Secured(HR_ROLE)
-//    public String closeFinalDocumentVacationForm() {
-//        return "redirect:/document/vacation";
-//    }
+    @GetMapping("/{id}/approve")
+    @Secured(BOSS_ROLE)
+    public String approveByBoss(Model model,
+                                @PathVariable("id") Long id,
+                                Principal principal) {
+        DocumentVacationDto documentVacationDto = documentVacationService.approveVacation(id, principal.getName());
+        model.addAttribute("document", documentVacationDto);
+        return "redirect:/documents/vacation/" + id;
+    }
+
+
+    @GetMapping("/{id}/decline")
+    @Secured(BOSS_ROLE)
+    public String declineByBoss(Model model,
+                                @PathVariable("id") Long id,
+                                Principal principal) {
+        DocumentVacationDto documentVacationDto = documentVacationService.declineVacation(id, principal.getName());
+        model.addAttribute("document", documentVacationDto);
+        return "redirect:/documents/vacation/" + id;
+    }
+
+
+    @GetMapping("/{id}/close")
+    @Secured(HR_ROLE)
+    public String showFinalDocumentVacationForm(Model model,
+                                                @PathVariable("id") Long id,
+                                                Principal principal) {
+        DocumentVacationDto documentVacationDto = documentVacationService.closeDocument(id, principal.getName());
+        model.addAttribute("document", documentVacationDto);
+        return "redirect:/documents/vacation/" + id;
+    }
 }

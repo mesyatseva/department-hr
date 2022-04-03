@@ -1,6 +1,5 @@
 package com.github.nmescv.departmenthr.department.controller;
 
-import com.github.nmescv.departmenthr.department.dto.DocumentDismissalDto;
 import com.github.nmescv.departmenthr.department.dto.DocumentReassignmentDto;
 import com.github.nmescv.departmenthr.department.repository.DepartmentRepository;
 import com.github.nmescv.departmenthr.department.repository.EmployeeRepository;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 import static com.github.nmescv.departmenthr.department.dictionary.RoleDict.*;
-import static com.github.nmescv.departmenthr.department.dictionary.RoleDict.HR_ROLE;
 
 @Controller
 @RequestMapping("/documents/reassignment")
@@ -65,32 +63,49 @@ public class DocumentReassignmentController {
         return "redirect:/documents/reassignment";
     }
 
-//    @GetMapping("/{id}")
-//    @Secured({EMPLOYEE_ROLE, BOSS_ROLE, HR_ROLE})
-//    public String showById(@PathVariable("id") Long id) {
-//        return "document_reassignment/document_profile";
-//    }
-//    @GetMapping
-//    @Secured(BOSS_ROLE)
-//    public String showReassignmentDocumentApprovalForm() {
-//        return "document_reassignment/approval_by_boss";
-//    }
-//
-//    @GetMapping
-//    @Secured(BOSS_ROLE)
-//    public String approveOrDeclineReassignmentOfEmployee() {
-//        return "redirect:/document/reassignment";
-//    }
-//
-//    @GetMapping
-//    @Secured(HR_ROLE)
-//    public String showFinalDocumentReassignmentForm() {
-//        return "document_reassignment/close_by_hr";
-//    }
-//
-//    @GetMapping
-//    @Secured(HR_ROLE)
-//    public String closeFinalDocumentReassignmentForm() {
-//        return "redirect:/document/reassignment";
-//    }
+    @GetMapping("/{id}")
+    @Secured({EMPLOYEE_ROLE, BOSS_ROLE, HR_ROLE})
+    public String showById(Model model,
+                           @PathVariable("id") Long id,
+                           Principal principal) {
+        DocumentReassignmentDto documentReassignmentDto = documentReassignmentService.showById(id, principal.getName());
+        if (documentReassignmentDto == null) {
+            String notFound = "Отсутствует документ на отпуск с номером - " + id;
+            model.addAttribute("notFound", notFound);
+        }
+        model.addAttribute("document", documentReassignmentDto);
+        return "document_reassignment/document_profile";
+    }
+
+    @GetMapping("/{id}/approve")
+    @Secured(BOSS_ROLE)
+    public String approveByBoss(Model model,
+                                @PathVariable("id") Long id,
+                                Principal principal) {
+        DocumentReassignmentDto documentReassignmentDto = documentReassignmentService.approveReassignment(id, principal.getName());
+        model.addAttribute("document", documentReassignmentDto);
+        return "redirect:/documents/reassignment/" + id;
+    }
+
+
+    @GetMapping("/{id}/decline")
+    @Secured(BOSS_ROLE)
+    public String declineByBoss(Model model,
+                                @PathVariable("id") Long id,
+                                Principal principal) {
+        DocumentReassignmentDto documentReassignmentDto = documentReassignmentService.declineReassignment(id, principal.getName());
+        model.addAttribute("document", documentReassignmentDto);
+        return "redirect:/documents/reassignment/" + id;
+    }
+
+
+    @GetMapping("/{id}/close")
+    @Secured(HR_ROLE)
+    public String showFinalDocumentVacationForm(Model model,
+                                                @PathVariable("id") Long id,
+                                                Principal principal) {
+        DocumentReassignmentDto documentReassignmentDto = documentReassignmentService.closeDocument(id, principal.getName());
+        model.addAttribute("document", documentReassignmentDto);
+        return "redirect:/documents/reassignment/" + id;
+    }
 }

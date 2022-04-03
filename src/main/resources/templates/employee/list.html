@@ -36,9 +36,9 @@
                                 <th th:replace="fragments/table :: header(title=#{user.birthday})"></th>
                                 <th th:replace="fragments/table :: header(#{user.department})"></th>
                                 <th th:replace="fragments/table :: header(#{user.position})"></th>
-                                <th:block sec:authorize="hasRole('ADMIN')"> <!--.-->
+                                <th:block sec:authorize="hasAuthority('HR')"> <!--.-->
                                     <th th:replace="fragments/table :: header('')"></th>
-                                    <th th:replace="fragments/table :: header('')"></th>
+<!--                                    <th th:replace="fragments/table :: header('')"></th>-->
                                 </th:block>
                             </tr>
                             <!-- end::tr[] -->
@@ -54,15 +54,15 @@
                                 <td th:replace="fragments/table :: data(contents=${employee.position})"></td>
 
                                 <!-- tag::td-admin[] -->
-<!--                                <th:block sec:authorize="hasRole('ADMIN')"> &lt;!&ndash;.&ndash;&gt;-->
-<!--                                    <td th:replace="fragments/table :: dataWithLink('Edit', @{'/users/'+ ${user.id.asString()}})"></td>-->
+                                <th:block sec:authorize="hasAuthority('HR')"> <!--.-->
+                                    <td th:replace="fragments/table :: dataWithLink('Show', @{'/employees/'+ ${employee.id}})"></td>
 <!--                                    <td th:x-data="|{name: '${user.userName.fullName}', deleteUrl: '/users/${user.id.asString()}/delete'}|"-->
 <!--                                        class="px-6 py-4 whitespace-no-wrap text-right text-sm font-medium">-->
 <!--                                        <a href="javascript:void(0)"-->
 <!--                                           class="text-green-600 hover:text-green-900"-->
 <!--                                           @click="$dispatch('open-delete-modal', {name, deleteUrl})">Delete</a>-->
 <!--                                    </td>-->
-<!--                                </th:block>-->
+                                </th:block>
                                 <!-- end::td-admin[] -->
                             </tr>
                             <!-- end::tr-body[] -->

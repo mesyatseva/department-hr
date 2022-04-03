@@ -13,14 +13,16 @@ import com.github.nmescv.departmenthr.security.entity.Role;
 import com.github.nmescv.departmenthr.security.entity.User;
 import com.github.nmescv.departmenthr.security.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.github.nmescv.departmenthr.department.dictionary.RoleDict.HR_ROLE;
+import static com.github.nmescv.departmenthr.department.dictionary.RoleDict.*;
 
 @Slf4j
 @Service
@@ -51,22 +53,22 @@ public class DocumentVacationService {
      */
     public List<DocumentVacationDto> findAll(String username) {
 
-        log.info("Vacation Documents: Поиск сотрудника");
+        log.info("Vacation Documents - поиск всех документов: Поиск сотрудника");
         Employee employee = employeeRepository.findByTabelNumber(username);
         if (employee == null) {
             return null;
         }
-        log.info("Vacation Documents: Сотрудник найден");
-        log.info("Vacation Documents: Поиск аккаунта сотрудника");
+        log.info("Vacation Documents - поиск всех документов: Сотрудник найден");
+        log.info("Vacation Documents - поиск всех документов: Поиск аккаунта сотрудника");
         User user = userRepository.findByEmployee(employee);
         if (user == null) {
             return null;
         }
-        log.info("Vacation Documents: Аккаунт сотрудника существует");
-        log.info("Vacation Documents: Определяем роль сотрудника");
+        log.info("Vacation Documents - поиск всех документов: Аккаунт сотрудника существует");
+        log.info("Vacation Documents - поиск всех документов: Определяем роль сотрудника");
         for (Role role : user.getRoles()) {
             if (role.getName().equals(HR_ROLE)) {
-                log.info("Vacation Documents: Роль - HR");
+                log.info("Vacation Documents - поиск всех документов: Роль - HR");
                 return documentVacationRepository
                         .findAll()
                         .stream()
@@ -76,19 +78,21 @@ public class DocumentVacationService {
         }
 
         for (Role role : user.getRoles()) {
-            if (role.getName().equals(RoleDict.BOSS_ROLE)) {
-                log.info("Vacation Documents: Роль - BOSS");
-                return documentVacationRepository
+            if (role.getName().equals(BOSS_ROLE)) {
+                log.info("Vacation Documents - поиск всех документов: Роль - BOSS");
+                val list = documentVacationRepository
                         .findAllByBoss(employee)
                         .stream()
                         .map(documentVacationConverter::toDto)
                         .collect(Collectors.toList());
+                log.info("Vacation Documents - поиск всех документов: Роль - BOSS: {}", list.toString());
+                return list;
             }
         }
 
         for (Role role : user.getRoles()) {
             if (role.getName().equals(RoleDict.EMPLOYEE_ROLE)) {
-                log.info("Vacation Documents: Роль - EMPLOYEE");
+                log.info("Vacation Documents - поиск всех документов: Роль - EMPLOYEE");
                 return documentVacationRepository
                         .findAllByEmployee(employee)
                         .stream()
@@ -97,7 +101,7 @@ public class DocumentVacationService {
             }
         }
 
-        log.info("Vacation Documents: для данного сотрудника нет никаких документов");
+        log.info("Vacation Documents - поиск всех документов: для данного сотрудника нет никаких документов");
         return null;
     }
 
@@ -123,14 +127,75 @@ public class DocumentVacationService {
         return documentVacationConverter.toDto(saved);
     }
 
+
+    /**
+     * Поиск документа по идентификатору документа
+     * EMPLOYEE - видит только свои документы
+     * BOSS - видит свои документы + документы своих подчиненных
+     * HR - видит все документы
+     *
+     * @param documentId идентификатор документа
+     * @param username табельный номер пользователя
+     * @return информация о документе
+     */
+    public DocumentVacationDto showById(Long documentId, String username) {
+
+        DocumentVacation documentVacation = documentVacationRepository.findById(documentId).orElse(null);
+        if (documentVacation == null) {
+            return null;
+        }
+
+        log.info("Vacation Documents - поиск документа: Поиск сотрудника");
+        Employee employee = employeeRepository.findByTabelNumber(username);
+        if (employee == null) {
+            return null;
+        }
+
+        log.info("Vacation Documents - поиск документа: Сотрудник найден");
+        log.info("Vacation Documents - поиск документа: Поиск аккаунта сотрудника");
+        User user = userRepository.findByEmployee(employee);
+        if (user == null) {
+            return null;
+        }
+        log.info("Vacation Documents - поиск документа: Аккаунт сотрудника существует");
+        log.info("Vacation Documents - поиск документа: Определяем роль сотрудника");
+
+        for (Role role : user.getRoles()) {
+            if (role.getName().equals(HR_ROLE)) {
+                log.info("Vacation Documents - поиск документа: Роль - HR");
+                log.info(documentVacation.getDocumentStatus().getName());
+                return documentVacationConverter.toDto(documentVacation);
+            }
+
+            if (role.getName().equals(BOSS_ROLE)) {
+                log.info("Vacation Documents - поиск документа: Роль - BOSS");
+                if (documentVacation.getBoss().getTabelNumber().equals(username)) {
+                    log.info(documentVacation.getDocumentStatus().getName());
+                    return documentVacationConverter.toDto(documentVacation);
+                }
+            }
+
+            if (role.getName().equals(EMPLOYEE_ROLE)) {
+                log.info("Vacation Documents - поиск документа: Роль - EMPLOYEE");
+                if (documentVacation.getEmployee().getTabelNumber().equals(username)) {
+                    log.info(documentVacation.getDocumentStatus().getName());
+                    return documentVacationConverter.toDto(documentVacation);
+                }
+            }
+        }
+
+        return null;
+    }
+
     /**
      * ROLE: Начальник
      *
      * Начальник подтверждает отпуск сотрудника
      * @return согласованный документ, статус "В процессе"
      */
-    public DocumentVacationDto approveVacation(DocumentVacationDto dto, Long bossId) {
-        dto.setIsApproved(Boolean.FALSE);
+    public DocumentVacationDto approveVacation(Long id, String username) {
+        DocumentVacationDto dto = showById(id, username);
+        dto.setIsApproved(Boolean.TRUE);
         dto.setDocumentStatus(DocumentStatusDict.IN_PROCESS.getStatus());
         DocumentVacation entity = documentVacationConverter.toEntity(dto);
         DocumentVacation saved = documentVacationRepository.save(entity);
@@ -141,8 +206,9 @@ public class DocumentVacationService {
      * ROLE: Начальник
      * @return отклоненный документ, статус "В процессе"
      */
-    public DocumentVacationDto declineVacation(DocumentVacationDto dto, Long bossId) {
-        dto.setIsApproved(Boolean.TRUE);
+    public DocumentVacationDto declineVacation(Long id, String username) {
+        DocumentVacationDto dto = showById(id, username);
+        dto.setIsApproved(Boolean.FALSE);
         dto.setDocumentStatus(DocumentStatusDict.IN_PROCESS.getStatus());
         DocumentVacation entity = documentVacationConverter.toEntity(dto);
         DocumentVacation saved = documentVacationRepository.save(entity);
@@ -155,9 +221,10 @@ public class DocumentVacationService {
      * Завершает оформление документа
      * @return оформленный документ, статус "Закрыт"
      */
-    public DocumentVacationDto endFormingVacationDocument(DocumentVacationDto dto, Long hrId) {
+    public DocumentVacationDto closeDocument(Long id, String username) {
+        DocumentVacationDto dto = showById(id, username);
+        dto.setHr(employeeRepository.findByTabelNumber(username).getId());
         dto.setDocumentStatus(DocumentStatusDict.CLOSED.getStatus());
-        dto.setHr(hrId);
         DocumentVacation entity = documentVacationConverter.toEntity(dto);
         DocumentVacation saved = documentVacationRepository.save(entity);
         return documentVacationConverter.toDto(saved);

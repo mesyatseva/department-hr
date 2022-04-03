@@ -37,6 +37,7 @@
                                 <th th:replace="fragments/table :: header(#{document.status})"></th>
                                 <th th:replace="fragments/table :: header(#{document.department})"></th>
                                 <th th:replace="fragments/table :: header(#{document.position})"></th>
+                                <th th:replace="fragments/table :: header('')"></th>
                             </tr>
                             <!-- end::tr[] -->
                             </thead>
@@ -52,6 +53,9 @@
                                 <td th:replace="fragments/table :: data(contents=${document.getDocumentStatus()})"></td>
                                 <td th:replace="fragments/table :: data(contents=${document.department})"></td>
                                 <td th:replace="fragments/table :: data(contents=${document.position})"></td>
+                                <td th:replace="fragments/table :: dataWithLink('Show', @{'/documents/reassignment/'+ ${document.id}})"></td>
+
+                                <!-- end::td-admin[] -->
                             </tr>
                             <!--                             end::tr-body[]-->
                             </tbody>

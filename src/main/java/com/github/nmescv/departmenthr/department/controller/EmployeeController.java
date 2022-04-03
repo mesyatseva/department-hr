@@ -98,4 +98,15 @@ public class EmployeeController {
         model.addAttribute("employee", employee);
         return "employee/profile";
     }
+
+    @GetMapping("/{id}")
+    public String showProfile(Model model, @PathVariable("id") Long id) {
+        EmployeeDto employee = employeeService.showById(id);
+        if (employee == null) {
+            String notFound = "Отсутствует сотрудник с номером - " + id;
+            model.addAttribute("notFound", notFound);
+        }
+        model.addAttribute("employee", employee);
+        return "employee/profile";
+    }
 }

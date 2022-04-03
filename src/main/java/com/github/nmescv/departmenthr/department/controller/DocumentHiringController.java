@@ -1,6 +1,7 @@
 package com.github.nmescv.departmenthr.department.controller;
 
 import com.github.nmescv.departmenthr.department.dto.DocumentHiringDto;
+import com.github.nmescv.departmenthr.department.dto.DocumentReassignmentDto;
 import com.github.nmescv.departmenthr.department.dto.EmployeeDto;
 import com.github.nmescv.departmenthr.department.repository.DepartmentRepository;
 import com.github.nmescv.departmenthr.department.repository.EmployeeRepository;
@@ -75,31 +76,47 @@ public class DocumentHiringController {
 
     @GetMapping("/{id}")
     @Secured({EMPLOYEE_ROLE, BOSS_ROLE, HR_ROLE})
-    public String showById(@PathVariable("id") Long id) {
+    public String showById(Model model,
+                           @PathVariable("id") Long id,
+                           Principal principal) {
+        DocumentHiringDto documentHiringDto = documentHiringService.showById(id, principal.getName());
+        if (documentHiringDto == null) {
+            String notFound = "Отсутствует документ на отпуск с номером - " + id;
+            model.addAttribute("notFound", notFound);
+        }
+        model.addAttribute("document", documentHiringDto);
         return "document_hiring/document_profile";
     }
 
-//    @GetMapping
-//    @Secured(BOSS_ROLE)
-//    public String showHiringDocumentApprovalForm() {
-//        return "document_hiring/approval_by_boss";
-//    }
-//
-//    @GetMapping
-//    @Secured(BOSS_ROLE)
-//    public String approveOrDeclineHiringOfEmployee() {
-//        return "redirect:/document/hiring";
-//    }
-//
-//    @GetMapping
-//    @Secured(HR_ROLE)
-//    public String showFinalDocumentHiringForm() {
-//        return "document_hiring/close_by_hr";
-//    }
-//
-//    @GetMapping
-//    @Secured(HR_ROLE)
-//    public String closeFinalDocumentHiringForm() {
-//        return "redirect:/document/hiring";
-//    }
+    @GetMapping("/{id}/approve")
+    @Secured(BOSS_ROLE)
+    public String approveByBoss(Model model,
+                                @PathVariable("id") Long id,
+                                Principal principal) {
+        DocumentHiringDto documentHiringDto = documentHiringService.approveHiring(id, principal.getName());
+        model.addAttribute("document", documentHiringDto);
+        return "redirect:/documents/hiring/" + id;
+    }
+
+
+    @GetMapping("/{id}/decline")
+    @Secured(BOSS_ROLE)
+    public String declineByBoss(Model model,
+                                @PathVariable("id") Long id,
+                                Principal principal) {
+        DocumentHiringDto documentHiringDto = documentHiringService.declineHiring(id, principal.getName());
+        model.addAttribute("document", documentHiringDto);
+        return "redirect:/documents/hiring/" + id;
+    }
+
+
+    @GetMapping("/{id}/close")
+    @Secured(HR_ROLE)
+    public String showFinalDocumentVacationForm(Model model,
+                                                @PathVariable("id") Long id,
+                                                Principal principal) {
+        DocumentHiringDto documentHiringDto = documentHiringService.closeDocument(id, principal.getName());
+        model.addAttribute("document", documentHiringDto);
+        return "redirect:/documents/hiring/" + id;
+    }
 }

@@ -45,6 +45,19 @@ public class EmployeeService {
     }
 
     /**
+     * Отобаражет информацию сотрудника через табельный номер
+     * @param id идентификатор сотрудника
+     * @return карточка сотрудника
+     */
+    public EmployeeDto showById(Long id) {
+        Employee employee = employeeRepository.findById(id).orElse(null);
+        if (employee == null) {
+            return null;
+        }
+        return employeeConverter.toDto(employee);
+    }
+
+    /**
      * Создает карточку с информацией о сотруднике
      * @param employeeDto данные для сотрудника
      * @return сохраненная информация о сотрудника

@@ -4,7 +4,9 @@ import com.github.nmescv.departmenthr.department.converter.DocumentHiringConvert
 import com.github.nmescv.departmenthr.department.dictionary.DocumentStatusDict;
 import com.github.nmescv.departmenthr.department.dictionary.RoleDict;
 import com.github.nmescv.departmenthr.department.dto.DocumentHiringDto;
+import com.github.nmescv.departmenthr.department.dto.DocumentReassignmentDto;
 import com.github.nmescv.departmenthr.department.entity.DocumentHiring;
+import com.github.nmescv.departmenthr.department.entity.DocumentReassignment;
 import com.github.nmescv.departmenthr.department.entity.Employee;
 import com.github.nmescv.departmenthr.department.repository.DocumentHiringRepository;
 import com.github.nmescv.departmenthr.department.repository.EmployeeRepository;
@@ -19,6 +21,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static com.github.nmescv.departmenthr.department.dictionary.RoleDict.*;
 
 
 @Slf4j
@@ -87,6 +91,65 @@ public class DocumentHiringService {
         return null;
     }
 
+    /**
+     * Поиск документа по идентификатору документа
+     * EMPLOYEE - видит только свои документы
+     * BOSS - видит свои документы + документы своих подчиненных
+     * HR - видит все документы
+     *
+     * @param documentId идентификатор документа
+     * @param username   табельный номер пользователя
+     * @return информация о документе
+     */
+    public DocumentHiringDto showById(Long documentId, String username) {
+
+        DocumentHiring document = documentHiringRepository.findById(documentId).orElse(null);
+        if (document == null) {
+            return null;
+        }
+
+        log.info("Hiring Documents - поиск документа: Поиск сотрудника");
+        Employee employee = employeeRepository.findByTabelNumber(username);
+        if (employee == null) {
+            return null;
+        }
+
+        log.info("Hiring Documents - поиск документа: Сотрудник найден");
+        log.info("Hiring Documents - поиск документа: Поиск аккаунта сотрудника");
+        User user = userRepository.findByEmployee(employee);
+        if (user == null) {
+            return null;
+        }
+        log.info("Hiring Documents - поиск документа: Аккаунт сотрудника существует");
+        log.info("Hiring Documents - поиск документа: Определяем роль сотрудника");
+
+        for (Role role : user.getRoles()) {
+            if (role.getName().equals(HR_ROLE)) {
+                log.info("Hiring Documents - поиск документа: Роль - HR");
+                log.info(document.getDocumentStatus().getName());
+                return documentHiringConverter.toDto(document);
+            }
+
+            if (role.getName().equals(BOSS_ROLE)) {
+                log.info("Hiring Documents - поиск документа: Роль - BOSS");
+                if (document.getBoss().getTabelNumber().equals(username)) {
+                    log.info(document.getDocumentStatus().getName());
+                    return documentHiringConverter.toDto(document);
+                }
+            }
+
+            if (role.getName().equals(EMPLOYEE_ROLE)) {
+                log.info("Hiring Documents - поиск документа: Роль - EMPLOYEE");
+                if (document.getEmployee().getTabelNumber().equals(username)) {
+                    log.info(document.getDocumentStatus().getName());
+                    return documentHiringConverter.toDto(document);
+                }
+            }
+        }
+
+        return null;
+    }
+
 
     /**
      * ROLE: HR
@@ -114,11 +177,12 @@ public class DocumentHiringService {
      * ROLE: Начальник
      *
      * Подтверждает документ на прием на работу
-     * @param dto - данные документа
+     * @param id - данные документа
      * @return созданный документ в статусе "В процессе"
      */
-    public DocumentHiringDto approveHiringDocument(DocumentHiringDto dto, Long bossId) {
-        dto.setIsApproved(Boolean.FALSE);
+    public DocumentHiringDto approveHiring(Long id, String username) {
+        DocumentHiringDto dto = showById(id, username);
+        dto.setIsApproved(Boolean.TRUE);
         dto.setDocumentStatus(DocumentStatusDict.IN_PROCESS.getStatus());
         DocumentHiring entity = documentHiringConverter.toEntity(dto);
         DocumentHiring saved = documentHiringRepository.save(entity);
@@ -129,11 +193,12 @@ public class DocumentHiringService {
      * ROLE: Начальник
      *
      * Отклоняет документ на прием на работу
-     * @param dto - данные документа
+     * @param id - данные документа
      * @return созданный документ в статусе "В процессе"
      */
-    public DocumentHiringDto declineHiringDocument(DocumentHiringDto dto, Long bossId) {
-        dto.setIsApproved(Boolean.TRUE);
+    public DocumentHiringDto declineHiring(Long id, String username) {
+        DocumentHiringDto dto = showById(id, username);
+        dto.setIsApproved(Boolean.FALSE);
         dto.setDocumentStatus(DocumentStatusDict.IN_PROCESS.getStatus());
         DocumentHiring entity = documentHiringConverter.toEntity(dto);
         DocumentHiring saved = documentHiringRepository.save(entity);
@@ -144,11 +209,13 @@ public class DocumentHiringService {
      * ROLE: HR
      *
      * Закрывает документ на прием на работу
-     * @param dto - данные документа
+     * @param id - данные документа
      * @return созданный документ в статусе "Закрыт"
      */
-    public DocumentHiringDto finishHiringDocument(DocumentHiringDto dto) {
+    public DocumentHiringDto closeDocument(Long id, String username) {
+        DocumentHiringDto dto = showById(id, username);
         dto.setDocumentStatus(DocumentStatusDict.CLOSED.getStatus());
+        dto.setHr(employeeRepository.findByTabelNumber(username).getId());
         DocumentHiring entity = documentHiringConverter.toEntity(dto);
         DocumentHiring saved = documentHiringRepository.save(entity);
         return documentHiringConverter.toDto(saved);
