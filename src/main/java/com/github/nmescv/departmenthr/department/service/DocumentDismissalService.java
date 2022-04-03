@@ -4,7 +4,9 @@ import com.github.nmescv.departmenthr.department.converter.DocumentDismissalConv
 import com.github.nmescv.departmenthr.department.dictionary.DocumentStatusDict;
 import com.github.nmescv.departmenthr.department.dictionary.RoleDict;
 import com.github.nmescv.departmenthr.department.dto.DocumentDismissalDto;
+import com.github.nmescv.departmenthr.department.dto.DocumentVacationDto;
 import com.github.nmescv.departmenthr.department.entity.DocumentDismissal;
+import com.github.nmescv.departmenthr.department.entity.DocumentVacation;
 import com.github.nmescv.departmenthr.department.entity.Employee;
 import com.github.nmescv.departmenthr.department.repository.DocumentDismissalRepository;
 import com.github.nmescv.departmenthr.department.repository.EmployeeRepository;
@@ -19,7 +21,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.github.nmescv.departmenthr.department.dictionary.RoleDict.HR_ROLE;
+import static com.github.nmescv.departmenthr.department.dictionary.RoleDict.*;
 
 @Slf4j
 @Service
@@ -101,9 +103,69 @@ public class DocumentDismissalService {
     }
 
     /**
-     * ROLE: Сотрудник
+     * Поиск документа по идентификатору документа
+     * EMPLOYEE - видит только свои документы
+     * BOSS - видит свои документы + документы своих подчиненных
+     * HR - видит все документы
      *
+     * @param documentId идентификатор документа
+     * @param username   табельный номер пользователя
+     * @return информация о документе
+     */
+    public DocumentDismissalDto showById(Long documentId, String username) {
+
+        DocumentDismissal document = documentDismissalRepository.findById(documentId).orElse(null);
+        if (document == null) {
+            return null;
+        }
+
+        log.info("Dismissal Documents - поиск документа: Поиск сотрудника");
+        Employee employee = employeeRepository.findByTabelNumber(username);
+        if (employee == null) {
+            return null;
+        }
+
+        log.info("Dismissal Documents - поиск документа: Сотрудник найден");
+        log.info("Dismissal Documents - поиск документа: Поиск аккаунта сотрудника");
+        User user = userRepository.findByEmployee(employee);
+        if (user == null) {
+            return null;
+        }
+        log.info("Dismissal Documents - поиск документа: Аккаунт сотрудника существует");
+        log.info("Dismissal Documents - поиск документа: Определяем роль сотрудника");
+
+        for (Role role : user.getRoles()) {
+            if (role.getName().equals(HR_ROLE)) {
+                log.info("Dismissal Documents - поиск документа: Роль - HR");
+                log.info(document.getDocumentStatus().getName());
+                return documentDismissalConverter.toDto(document);
+            }
+
+            if (role.getName().equals(BOSS_ROLE)) {
+                log.info("Dismissal Documents - поиск документа: Роль - BOSS");
+                if (document.getBoss().getTabelNumber().equals(username)) {
+                    log.info(document.getDocumentStatus().getName());
+                    return documentDismissalConverter.toDto(document);
+                }
+            }
+
+            if (role.getName().equals(EMPLOYEE_ROLE)) {
+                log.info("Dismissal Documents - поиск документа: Роль - EMPLOYEE");
+                if (document.getEmployee().getTabelNumber().equals(username)) {
+                    log.info(document.getDocumentStatus().getName());
+                    return documentDismissalConverter.toDto(document);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * ROLE: Сотрудник
+     * <p>
      * Сотрудник, желающийся уволиться, создает документ на увольнение
+     *
      * @return документ с заявлением на увольнение
      */
     public DocumentDismissalDto createRequestToDismiss(DocumentDismissalDto dto, Long employeeId) {
@@ -124,12 +186,14 @@ public class DocumentDismissalService {
 
     /**
      * ROLE: Начальник
-     *
+     * <p>
      * Начальник подтверждает увольнение сотрудника
+     *
      * @return документ с "подписью" от начальника с согласием на увольнение
      */
-    public DocumentDismissalDto approveDismiss(DocumentDismissalDto dto) {
-        dto.setIsApproved(Boolean.FALSE);
+    public DocumentDismissalDto approveDismiss(Long id, String username) {
+        DocumentDismissalDto dto = showById(id, username);
+        dto.setIsApproved(Boolean.TRUE);
         dto.setDocumentStatus(DocumentStatusDict.IN_PROCESS.getStatus());
         DocumentDismissal entity = documentDismissalConverter.toEntity(dto);
         DocumentDismissal saved = documentDismissalRepository.save(entity);
@@ -139,10 +203,12 @@ public class DocumentDismissalService {
 
     /**
      * ROLE: Начальник
+     *
      * @return документ с отклонением на увольнение
      */
-    public DocumentDismissalDto declineDismiss(DocumentDismissalDto dto) {
-        dto.setIsApproved(Boolean.TRUE);
+    public DocumentDismissalDto declineDismiss(Long id, String username) {
+        DocumentDismissalDto dto = showById(id, username);
+        dto.setIsApproved(Boolean.FALSE);
         dto.setDocumentStatus(DocumentStatusDict.IN_PROCESS.getStatus());
         DocumentDismissal entity = documentDismissalConverter.toEntity(dto);
         DocumentDismissal saved = documentDismissalRepository.save(entity);
@@ -151,13 +217,15 @@ public class DocumentDismissalService {
 
     /**
      * ROLE: HR
-     *
+     * <p>
      * Завершает оформление документа
+     *
      * @return оформленый документ
      */
-    public DocumentDismissalDto endFormingDocument(DocumentDismissalDto dto, Long hrId) {
+    public DocumentDismissalDto closeDocument(Long id, String username) {
+        DocumentDismissalDto dto = showById(id, username);
         dto.setDocumentStatus(DocumentStatusDict.CLOSED.getStatus());
-        dto.setHr(hrId);
+        dto.setHr(employeeRepository.findByTabelNumber(username).getId());
         DocumentDismissal entity = documentDismissalConverter.toEntity(dto);
         DocumentDismissal saved = documentDismissalRepository.save(entity);
         return documentDismissalConverter.toDto(saved);

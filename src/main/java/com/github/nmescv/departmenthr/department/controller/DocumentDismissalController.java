@@ -2,6 +2,7 @@ package com.github.nmescv.departmenthr.department.controller;
 
 import com.github.nmescv.departmenthr.department.dto.DocumentDismissalDto;
 import com.github.nmescv.departmenthr.department.dto.DocumentHiringDto;
+import com.github.nmescv.departmenthr.department.dto.DocumentVacationDto;
 import com.github.nmescv.departmenthr.department.repository.DepartmentRepository;
 import com.github.nmescv.departmenthr.department.repository.EmployeeRepository;
 import com.github.nmescv.departmenthr.department.repository.PositionRepository;
@@ -54,12 +55,6 @@ public class DocumentDismissalController {
         return "document_dismissal/create_by_employee";
     }
 
-    @GetMapping("/{id}")
-    @Secured({EMPLOYEE_ROLE, BOSS_ROLE, HR_ROLE})
-    public String showById(@PathVariable("id") Long id) {
-        return "document_dismissal/document_profile";
-    }
-
     @PostMapping("/create")
     @Secured(EMPLOYEE_ROLE)
     public String createDismissalDocumentRequestByEmployee(@ModelAttribute("document") DocumentDismissalDto dto,
@@ -72,27 +67,50 @@ public class DocumentDismissalController {
         return "redirect:/documents/dismissal";
     }
 
-//    @GetMapping
-//    @Secured(BOSS_ROLE)
-//    public String showDismissalDocumentApprovalForm() {
-//        return "document_dismissal/approval_by_boss";
-//    }
-//
-//    @GetMapping
-//    @Secured(BOSS_ROLE)
-//    public String approveOrDeclineDismissalOfEmployee() {
-//        return "redirect:/document/dismissal";
-//    }
-//
-//    @GetMapping
-//    @Secured(HR_ROLE)
-//    public String showFinalDocumentDismissalForm() {
-//        return "document_dismissal/close_by_hr";
-//    }
-//
-//    @GetMapping
-//    @Secured(HR_ROLE)
-//    public String closeFinalDocumentDismissalForm() {
-//        return "redirect:/document/dismissal";
-//    }
+    @GetMapping("/{id}")
+    @Secured({EMPLOYEE_ROLE, BOSS_ROLE, HR_ROLE})
+    public String showById(Model model,
+                           @PathVariable("id") Long id,
+                           Principal principal) {
+        DocumentDismissalDto documentDismissalDto = documentDismissalService.showById(id, principal.getName());
+        if (documentDismissalDto == null) {
+            String notFound = "Отсутствует документ на отпуск с номером - " + id;
+            model.addAttribute("notFound", notFound);
+        }
+        model.addAttribute("document", documentDismissalDto);
+        return "document_dismissal/document_profile";
+    }
+
+
+    @GetMapping("/{id}/approve")
+    @Secured(BOSS_ROLE)
+    public String approveByBoss(Model model,
+                                @PathVariable("id") Long id,
+                                Principal principal) {
+        DocumentDismissalDto documentDismissalDto = documentDismissalService.approveDismiss(id, principal.getName());
+        model.addAttribute("document", documentDismissalDto);
+        return "redirect:/documents/dismissal/" + id;
+    }
+
+
+    @GetMapping("/{id}/decline")
+    @Secured(BOSS_ROLE)
+    public String declineByBoss(Model model,
+                                @PathVariable("id") Long id,
+                                Principal principal) {
+        DocumentDismissalDto documentDismissalDto = documentDismissalService.declineDismiss(id, principal.getName());
+        model.addAttribute("document", documentDismissalDto);
+        return "redirect:/documents/dismissal/" + id;
+    }
+
+
+    @GetMapping("/{id}/close")
+    @Secured(HR_ROLE)
+    public String showFinalDocumentVacationForm(Model model,
+                                                @PathVariable("id") Long id,
+                                                Principal principal) {
+        DocumentDismissalDto documentDismissalDto = documentDismissalService.closeDocument(id, principal.getName());
+        model.addAttribute("document", documentDismissalDto);
+        return "redirect:/documents/dismissal/" + id;
+    }
 }
