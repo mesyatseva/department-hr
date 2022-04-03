@@ -10,12 +10,14 @@
         Text input label
     </label>
     <div class="mt-1 relative rounded-md shadow-sm">
+        <p>
         <input th:id="${fieldName}"
                th:type="${inputType}"
                th:placeholder="${placeholder}"
                th:field="*{__${fieldName}__}"
-               class="shadow-sm block w-full sm:text-sm border-gray-300 rounded-md"
+               class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
                th:classappend="${#fields.hasErrors('__${fieldName}__')?'border-red-300 focus:border-red-300 focus:ring-red-500':'focus:ring-green-500 focus:border-green-500'}">
+        </p>
         <div th:if="${#fields.hasErrors('__${fieldName}__')}"
              class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
             <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">

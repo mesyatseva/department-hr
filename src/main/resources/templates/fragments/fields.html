@@ -1,0 +1,14 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+
+<div th:fragment="textfield(labelName, fieldName)" class="sm:col-span-3">
+    <label class="control-label" th:for="${fieldName}" th:text="${labelName}">Создан</label>
+    <p th:id="${fieldName}"
+       th:field="*{__${fieldName}__}"
+       th:text="*{__${fieldName}__}"
+       class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+        Field
+    </p>
+</div>
+</html>

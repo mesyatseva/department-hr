@@ -4,116 +4,92 @@
         xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
         xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:x-transition="http://www.w3.org/1999/xhtml"
         layout:decorate="~{layout/layout}"
-        th:with="activeMenuItem='vacation'">
+        th:with="activeMenuItem='hiring'">
 <head>
     <meta charset="UTF-8">
     <title>Прием</title>
-
-    <link rel="stylesheet"
-          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-          crossorigin="anonymous">
 </head>
 <body>
 
 <div layout:fragment="page-content">
+
+    <div th:if="${document.documentStatus=='Открыт'}" sec:authorize="hasAuthority('BOSS')">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8"> <!--.-->
+            <div class="flex justify-between">
+                <h1 class="text-2xl font-semibold text-gray-900"
+                    th:text="#{document.hiring}">Title</h1> <!--.-->
+                <span class="inline-flex rounded-md shadow-sm">
+                  <a th:href="@{'/documents/hiring/' + ${document.id} + '/decline'}"
+                     th:id="'add-user-button'"
+                     th:text="#{document.decline}"
+                     class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                  </a>
+                  <a th:href="@{'/documents/hiring/' + ${document.id} + '/approve'}"
+                     th:id="'add-user-button'"
+                     th:text="#{document.approve}"
+                     class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                  </a>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${document.documentStatus=='В процессе'}">
+        <div th:replace="fragments/titles :: title-with-button(#{document.hiring}, #{document.close}, @{'/documents/hiring/' + ${document.id} + '/close'}, 'add-user-button')"
+             sec:authorize="hasAuthority('HR')"></div>
+    </div>
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
         <div class="py-4">
             <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
 
-<!--                <div th:replace="fragments/titles :: title-with-button(#{document.vacation}, #{document.back}, @{'/documents/hiring/'}, 'add-user-button')">-->
+                <div th:if="${document != null}" th:object="${document}">
+                    <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
 
-                    <div th:if="${document.documentStatus=='Открыт'}">
-                        <div th:replace="fragments/titles :: title-with-button(#{document.hiring}, #{document.decline}, @{'/documents/hiring/' + ${document.id} + '/decline'}, 'add-user-button')"
-                             sec:authorize="hasAuthority('BOSS')"></div>
-                        <div th:replace="fragments/titles :: title-with-button(#{document.hiring}, #{document.approve}, @{'/documents/hiring/' + ${document.id} + '/approve'}, 'add-user-button')"
-                             sec:authorize="hasAuthority('BOSS')"></div>
-                    </div>
+                        <div th:replace="fragments/fields :: textfield('Номер документа', 'orderNumber')"></div>
+                        <div th:replace="fragments/fields :: textfield('Создан', 'createdAt')"></div>
+                        <div th:replace="fragments/fields :: textfield('Статус документа', 'documentStatus')"></div>
 
-                    <div th:if="${document.documentStatus=='В процессе'}">
-                        <div th:replace="fragments/titles :: title-with-button(#{document.hiring}, #{document.close}, @{'/documents/hiring/' + ${document.id} + '/close'}, 'add-user-button')"
-                             sec:authorize="hasAuthority('HR')"></div>
-                    </div>
-
-                    <div class="container">
-                        <div class="row">
-                            <div th:if="${document != null}" class="col-md-9 col-md-offset-3" th:object="${document}">
-
-                                <h2>Прием на работу</h2>
-
-                                <div th:if="${document.isApproved == true}" class="form-group">
-                                    <label class="control-label" for="isApprovedTrue">Ответ от начальника:</label>
-                                    <p id="isApprovedTrue" class="form-control" th:text="Согласовано">Согласовано</p>
-                                </div>
-
-                                <div th:if="${document.isApproved == false}" class="form-group">
-                                    <label class="control-label" for="isApprovedFalse">Ответ от начальника:</label>
-                                    <p id="isApprovedFalse" class="form-control" th:text="Отклонено">Отклонено</p>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="control-label" for="createdAt">Создан</label>
-                                    <p id="createdAt" class="form-control" th:text="*{createdAt}">12.12.2012</p>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="control-label" for="orderNumber">Номер документа</label>
-                                    <p id="orderNumber" class="form-control" th:text="*{orderNumber}">Номер
-                                        документа</p>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="control-label" for="employeeId">Сотрудник ID</label>
-                                    <p id="employeeId" class="form-control" th:text="*{employeeId}">Сотрудник ID</p>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="control-label" for="bossId">Начальник ID</label>
-                                    <p id="bossId" class="form-control" th:text="*{bossId}">Начальник ID</p>
-                                </div>
-
-                                <div th:if="${document.hr != null}" class="form-group">
-                                    <label class="control-label" for="hr">HR ID</label>
-                                    <p id="hr" class="form-control" th:text="*{hr}">HR ID</p>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="control-label" for="documentStatus">Статус документа</label>
-                                    <p id="documentStatus" class="form-control" th:text="*{documentStatus}">Открыт</p>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="control-label" for="department">Подразделение</label>
-                                    <p id="department" class="form-control" th:text="*{department}">Подразделение</p>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="control-label" for="position">Должность</label>
-                                    <p id="position" class="form-control" th:text="*{position}">Номер паспорта</p>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="control-label" for="startAt">Дата приема на работу</label>
-                                    <p id="startAt" class="form-control" th:text="*{hiringDate}">12.12.2012</p>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="control-label" for="endAt">Зарплата</label>
-                                    <p id="endAt" class="form-control" th:text="*{salary}">12.12.2012</p>
-                                </div>
-
-                                <div th:if="${document == null}" class="col-md-9 col-md-offset-3">
-                                    <div class="form-group">
-                                        <h2 th:text="${notFound}">Отсутствует документ</h2>>
-                                    </div>
-                                </div>
-                            </div>
+                        <div th:if="${document.isApproved == true}" class="sm:col-span-3">
+                            <label class="control-label" for="isApprovedTrue">Ответ от начальника:</label>
+                            <p id="isApprovedTrue"
+                               th:text="Согласовано"
+                               class="form-control appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                                Field
+                            </p>
                         </div>
+
+                        <div th:if="${document.isApproved == false}" class="sm:col-span-3">
+                            <label class="control-label" for="isApprovedFalse">Ответ от начальника:</label>
+                            <p id="isApprovedFalse"
+                               th:text="Отклонено"
+                               class="form-control appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                                Field
+                            </p>
+                        </div>
+
+                        <div th:replace="fragments/fields :: textfield('Сотрудник ID', 'employeeId')"></div>
+                        <div th:replace="fragments/fields :: textfield('Начальник ID', 'bossId')"></div>
+                        <div th:replace="fragments/fields :: textfield('Подразделение', 'department')"></div>
+                        <div th:replace="fragments/fields :: textfield('Должность', 'position')"></div>
+                        <div th:replace="fragments/fields :: textfield('Дата приема на работу', 'hiringDate')"></div>
+                        <div th:replace="fragments/fields :: textfield('Зарплата', 'salary')"></div>
+
+                        <div th:if="${document.hr != null}">
+                            <div th:replace="fragments/fields :: textfield('HR', 'hr')"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div th:if="${document == null}" class="col-md-9 col-md-offset-3">
+                    <div class="form-group">
+                        <h2 th:text="${notFound}">Отсутствует документ</h2>>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-<!--</div>-->
+</div>
 </body>
 </html>
