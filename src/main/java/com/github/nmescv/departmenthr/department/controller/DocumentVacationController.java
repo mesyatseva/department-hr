@@ -42,8 +42,6 @@ public class DocumentVacationController {
         return "document_vacation/all_documents";
     }
 
-    ;
-
     @GetMapping("/new")
     @Secured(EMPLOYEE_ROLE)
     public String showVacationDocumentCreatingForm(Model model) {
