@@ -42,10 +42,13 @@ public class DocumentHiringConverter implements Converter<DocumentHiring, Docume
         Employee boss = employeeRepository.findById(dto.getBossId()).orElse(null);
 
         entity.setEmployee(employee);
-        entity.setBoss(boss);
+
+        if (boss != null) {
+            entity.setBoss(boss);
+        }
 
         if (dto.getHr() != null) {
-            entity.setBoss(employeeRepository.findById(dto.getHr()).orElse(null));
+            entity.setHr(employeeRepository.findById(dto.getHr()).orElse(null));
         }
 
         entity.setDocumentStatus(documentStatusRepository.findByName(dto.getDocumentStatus()));

@@ -83,7 +83,7 @@ public class EmployeeController {
 
         EmployeeDto savedEmployee = employeeService.createNewEmployee(employeeDto);
         if (savedEmployee == null) {
-            return "redirect:/employee/new";
+            return "redirect:/employees/new";
         }
         return "redirect:/employees/profile/" + employeeDto.getTabelNumber();
     }

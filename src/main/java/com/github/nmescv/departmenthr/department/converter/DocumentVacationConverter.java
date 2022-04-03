@@ -47,7 +47,7 @@ public class DocumentVacationConverter implements Converter<DocumentVacation, Do
         entity.setBoss(boss);
 
         if (dto.getHr() != null) {
-            entity.setBoss(employeeRepository.findById(dto.getHr()).orElse(null));
+            entity.setHr(employeeRepository.findById(dto.getHr()).orElse(null));
         }
 
         entity.setDocumentStatus(documentStatusRepository.findByName(dto.getDocumentStatus()));
@@ -85,9 +85,9 @@ public class DocumentVacationConverter implements Converter<DocumentVacation, Do
         dto.setDocumentStatus(entity.getDocumentStatus().getName());
         dto.setDepartment(entity.getDepartment().getName());
         dto.setPosition(entity.getPosition().getName());
-        dto.setStartAt(dto.getStartAt());
-        dto.setEndAt(dto.getEndAt());
-        dto.setVacationType(dto.getVacationType());
+        dto.setStartAt(entity.getStartAt());
+        dto.setEndAt(entity.getEndAt());
+        dto.setVacationType(entity.getVacationType());
         dto.setIsApproved(entity.getIsApproved());
         return dto;
     }

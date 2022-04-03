@@ -40,15 +40,15 @@ public class DocumentHiring {
     @JoinColumn(name = "hr_id")
     private Employee hr;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "document_status_id")
     private DocumentStatus documentStatus;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "department_id")
     private Department department;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "position_id")
     private Position position;
 

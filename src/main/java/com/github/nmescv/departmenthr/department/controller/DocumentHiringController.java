@@ -1,6 +1,7 @@
 package com.github.nmescv.departmenthr.department.controller;
 
 import com.github.nmescv.departmenthr.department.dto.DocumentHiringDto;
+import com.github.nmescv.departmenthr.department.dto.EmployeeDto;
 import com.github.nmescv.departmenthr.department.repository.DepartmentRepository;
 import com.github.nmescv.departmenthr.department.repository.EmployeeRepository;
 import com.github.nmescv.departmenthr.department.repository.PositionRepository;
@@ -9,10 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
@@ -41,11 +39,13 @@ public class DocumentHiringController {
     }
 
     @GetMapping
+    @Secured(HR_ROLE)
     public String findAllDocuments(Model model,
                                    Principal principal) {
         String username = principal.getName();
         log.info(username);
         List<DocumentHiringDto> list = documentHiringService.findAll(username);
+        log.info(list.toString());
         model.addAttribute("list", list);
         return "document_hiring/all_documents";
     }
@@ -62,7 +62,14 @@ public class DocumentHiringController {
 
     @PostMapping("/create")
     @Secured(HR_ROLE)
-    public String createHiringDocumentRequestByHR() {
+    public String createHiringDocumentRequestByHR(@ModelAttribute("document") DocumentHiringDto dto,
+                                                  Principal principal) {
+
+        Long hrId = employeeRepository.findByTabelNumber(principal.getName()).getId();
+        DocumentHiringDto createdDocument = documentHiringService.createHiringDocument(dto, hrId);
+        if (createdDocument == null) {
+            return "document_hiring/create_by_hr";
+        }
         return "redirect:/documents/hiring";
     }
 

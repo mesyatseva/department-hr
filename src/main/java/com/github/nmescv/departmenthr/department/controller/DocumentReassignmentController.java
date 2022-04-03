@@ -9,10 +9,9 @@ import com.github.nmescv.departmenthr.department.service.DocumentReassignmentSer
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 import static com.github.nmescv.departmenthr.department.dictionary.RoleDict.*;
 import static com.github.nmescv.departmenthr.department.dictionary.RoleDict.HR_ROLE;
@@ -38,7 +37,9 @@ public class DocumentReassignmentController {
 
     @GetMapping
     @Secured({EMPLOYEE_ROLE, BOSS_ROLE, HR_ROLE})
-    public String findAllDocuments() {
+    public String findAllDocuments(Model model,
+                                   Principal principal) {
+        model.addAttribute("list", documentReassignmentService.findAll(principal.getName()));
         return "document_reassignment/all_documents";
     }
 
@@ -52,18 +53,23 @@ public class DocumentReassignmentController {
         return "document_reassignment/create_by_employee";
     }
 
-    @GetMapping("/{id}")
-    @Secured({EMPLOYEE_ROLE, BOSS_ROLE, HR_ROLE})
-    public String showById(@PathVariable("id") Long id) {
-        return "document_reassignment/document_profile";
-    }
-
     @PostMapping("/create")
     @Secured(EMPLOYEE_ROLE)
-    public String createReassignmentDocumentRequestByEmployee() {
-        return "redirect:/document/reassignment";
+    public String createReassignmentDocumentRequestByEmployee(@ModelAttribute("document") DocumentReassignmentDto dto,
+                                                              Principal principal) {
+        Long employeeId = employeeRepository.findByTabelNumber(principal.getName()).getId();
+        DocumentReassignmentDto createdDocument = documentReassignmentService.createRequestForReassignment(dto, employeeId);
+        if (createdDocument == null) {
+            return "document_reassignment/create_by_employee";
+        }
+        return "redirect:/documents/reassignment";
     }
 
+//    @GetMapping("/{id}")
+//    @Secured({EMPLOYEE_ROLE, BOSS_ROLE, HR_ROLE})
+//    public String showById(@PathVariable("id") Long id) {
+//        return "document_reassignment/document_profile";
+//    }
 //    @GetMapping
 //    @Secured(BOSS_ROLE)
 //    public String showReassignmentDocumentApprovalForm() {

@@ -2,7 +2,9 @@ package com.github.nmescv.departmenthr.department.dto;
 
 import com.github.nmescv.departmenthr.department.entity.Department;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Data
@@ -19,6 +21,9 @@ public class DocumentDismissalDto {
     private String documentStatus;
     private String department;
     private String position;
+
+    @NotNull(message = "Поле 'Дата увольнения' должно быть заполнено")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private Date dismissalDate;
     private String reason;
     private Boolean isApproved;

@@ -9,10 +9,9 @@ import com.github.nmescv.departmenthr.department.service.DocumentVacationService
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 import static com.github.nmescv.departmenthr.department.dictionary.RoleDict.*;
 
@@ -37,9 +36,12 @@ public class DocumentVacationController {
 
     @GetMapping
     @Secured({EMPLOYEE_ROLE, BOSS_ROLE, HR_ROLE})
-    public String findAllDocuments() {
+    public String findAllDocuments(Model model,
+                                   Principal principal) {
+        model.addAttribute("list", documentVacationService.findAll(principal.getName()));
         return "document_vacation/all_documents";
     }
+        ;
 
     @GetMapping("/new")
     @Secured(EMPLOYEE_ROLE)
@@ -53,8 +55,14 @@ public class DocumentVacationController {
 
     @PostMapping("/create")
     @Secured(EMPLOYEE_ROLE)
-    public String createVacationDocumentRequestByEmployee() {
-        return "redirect:/document/vacation";
+    public String createVacationDocumentRequestByEmployee(@ModelAttribute("document") DocumentVacationDto dto,
+                                                          Principal principal) {
+        Long employeeId = employeeRepository.findByTabelNumber(principal.getName()).getId();
+        DocumentVacationDto createdDocument = documentVacationService.createRequestForVacation(dto, employeeId);
+        if (createdDocument == null) {
+            return "document_vacation/create_by_employee";
+        }
+        return "redirect:/documents/vacation";
     }
 
     @GetMapping("/{id}")

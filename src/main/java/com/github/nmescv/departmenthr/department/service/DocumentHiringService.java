@@ -12,6 +12,7 @@ import com.github.nmescv.departmenthr.security.entity.Role;
 import com.github.nmescv.departmenthr.security.entity.User;
 import com.github.nmescv.departmenthr.security.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -47,18 +48,22 @@ public class DocumentHiringService {
      */
     public List<DocumentHiringDto> findAll(String username) {
 
+        log.info("Hiring Documents: Поиск сотрудника");
         Employee employee = employeeRepository.findByTabelNumber(username);
         if (employee == null) {
             return null;
         }
-
+        log.info("Hiring Documents: Сотрудник найден");
+        log.info("Hiring Documents: Поиск аккаунта сотрудника");
         User user = userRepository.findByEmployee(employee);
         if (user == null) {
             return null;
         }
-
+        log.info("Hiring Documents: Аккаунт сотрудника существует");
+        log.info("Hiring Documents: Определяем роль сотрудника");
         for (Role role : user.getRoles()) {
             if (role.getName().equals(RoleDict.HR_ROLE)) {
+                log.info("Hiring Documents: Роль - HR");
                 return documentHiringRepository
                         .findAll()
                         .stream()
@@ -69,6 +74,7 @@ public class DocumentHiringService {
 
         for (Role role : user.getRoles()) {
             if (role.getName().equals(RoleDict.BOSS_ROLE)) {
+                log.info("Hiring Documents: Роль - BOSS");
                 return documentHiringRepository
                         .findAllByBoss(employee)
                         .stream()
@@ -77,6 +83,7 @@ public class DocumentHiringService {
             }
         }
 
+        log.info("Hiring Documents: для данного сотрудника нет никаких документов");
         return null;
     }
 
@@ -89,7 +96,11 @@ public class DocumentHiringService {
      * @return созданный документ в статусе "Открыт"
      */
     public DocumentHiringDto createHiringDocument(DocumentHiringDto dto, Long hrId) {
-        dto.setOrderNumber(UUID.randomUUID().toString());
+        String orderNumber = UUID.randomUUID().toString();
+        if (orderNumber.length() > 30) {
+            orderNumber = orderNumber.substring(0, 30);
+        }
+        dto.setOrderNumber(orderNumber);
         dto.setDocumentStatus(DocumentStatusDict.OPEN.getStatus());
         dto.setHr(hrId);
         dto.setCreatedAt(new Date());

@@ -30,6 +30,7 @@
                             <tr>
                                 <th th:replace="fragments/table :: header(#{document.id})"></th>
                                 <th th:replace="fragments/table :: header(#{document.createAt})"></th>
+                                <th th:replace="fragments/table :: header(#{document.hiring.date})"></th>
                                 <th th:replace="fragments/table :: header(#{document.order})"></th>
                                 <th th:replace="fragments/table :: header(title=#{document.employee})"></th>
                                 <th th:replace="fragments/table :: header(#{document.boss})"></th>
@@ -39,18 +40,21 @@
                             </tr>
                             <!-- end::tr[] -->
                             </thead>
-<!--                            <tbody>-->
-                            <!--                             tag::tr-body[] -->
-<!--                            <tr class="bg-white" th:each="employee : ${list}">-->
-<!--                                <td th:replace="fragments/table :: data(contents=${employee.surname},primary=true)"></td>-->
-<!--                                <td th:replace="fragments/table :: data(contents=${employee.name})"></td>-->
-<!--                                <td th:replace="fragments/table :: data(contents=${employee.middleName})"></td>-->
-<!--                                <td th:replace="fragments/table :: date(date=${employee.birthday})"></td>-->
-<!--                                <td th:replace="fragments/table :: data(contents=${employee.department})"></td>-->
-<!--                                <td th:replace="fragments/table :: data(contents=${employee.position})"></td>-->
-<!--                            </tr>-->
-                            <!-- end::tr-body[] -->
-<!--                            </tbody>-->
+                            <tbody>
+                            <!--                                                         tag::tr-body[]-->
+                            <tr class="bg-white" th:each="document : ${list}">
+                                <td th:replace="fragments/table :: data(contents=${document.id})"></td>
+                                <td th:replace="fragments/table :: date(date=${document.createdAt})"></td>
+                                <td th:replace="fragments/table :: date(date=${document.hiringDate})"></td>
+                                <td th:replace="fragments/table :: data(contents=${document.orderNumber})"></td>
+                                <td th:replace="fragments/table :: data(contents=${document.employeeId})"></td>
+                                <td th:replace="fragments/table :: data(contents=${document.bossId})"></td>
+                                <td th:replace="fragments/table :: data(contents=${document.getDocumentStatus()})"></td>
+                                <td th:replace="fragments/table :: data(contents=${document.department})"></td>
+                                <td th:replace="fragments/table :: data(contents=${document.position})"></td>
+                            </tr>
+                            <!--                             end::tr-body[]-->
+                            </tbody>
                         </table>
                     </div>
                 </div>

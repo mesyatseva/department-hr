@@ -21,20 +21,15 @@
 
                 <form id="user-form"
                       th:object="${document}"
-                      th:action="@{/documents/dismissal/create}"
+                      th:action="@{/documents/vacation/create}"
                       method="post"
                       enctype="multipart/form-data">
                     <div>
                         <div th:replace="fragments/forms :: fielderrors"></div>
                         <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                             <input type="hidden" th:field="*{id}"> <!--.-->
-                            <input type="hidden" th:field="*{createdAt}"> <!--.-->
-                            <input type="hidden" th:field="*{documentStatus}"> <!--.-->
-                            <input type="hidden" th:field="*{employeeId}"> <!--.-->
-                            <input type="hidden" th:field="*{isApproved}"> <!--.-->
 
                             <!-- tag::textinputs[] -->
-                            <div th:replace="fragments/forms :: textinput(#{document.order}, 'orderNumber', 'sm:col-span-3')"></div>
                             <div th:replace="fragments/forms :: dateinput(#{document.vacation.start}, 'startAt', 'sm:col-span-3')"></div>
                             <div th:replace="fragments/forms :: dateinput(#{document.vacation.end}, 'endAt', 'sm:col-span-3')"></div>
                             <div th:replace="fragments/forms :: textinput(#{document.vacationType}, 'vacationType', 'sm:col-span-3')"></div>

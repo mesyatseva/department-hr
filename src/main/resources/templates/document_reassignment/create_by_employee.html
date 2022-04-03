@@ -28,14 +28,8 @@
                         <div th:replace="fragments/forms :: fielderrors"></div>
                         <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                             <input type="hidden" th:field="*{id}"> <!--.-->
-                            <input type="hidden" th:field="*{createdAt}"> <!--.-->
-                            <input type="hidden" th:field="*{documentStatus}"> <!--.-->
-                            <input type="hidden" th:field="*{employeeId}"> <!--.-->
-                            <input type="hidden" th:field="*{isApproved}"> <!--.-->
-                            <input type="hidden" th:field="*{hr}"> <!--.-->
 
                             <!-- tag::textinputs[] -->
-                            <div th:replace="fragments/forms :: textinput(#{document.order}, 'orderNumber', 'sm:col-span-3')"></div>
                             <div th:replace="fragments/forms :: dateinput(#{document.reassignmentDate.date}, 'reassignmentDate', 'sm:col-span-3')"></div>
                             <div th:replace="fragments/forms :: textinput(#{document.salary}, 'salary', 'sm:col-span-3')"></div>
 

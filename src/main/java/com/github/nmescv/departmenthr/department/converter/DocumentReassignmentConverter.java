@@ -53,7 +53,7 @@ public class DocumentReassignmentConverter implements Converter<DocumentReassign
         entity.setBoss(boss);
 
         if (dto.getHr() != null) {
-            entity.setBoss(employeeRepository.findById(dto.getHr()).orElse(null));
+            entity.setHr(employeeRepository.findById(dto.getHr()).orElse(null));
         }
 
         entity.setDocumentStatus(documentStatusRepository.findByName(dto.getDocumentStatus()));

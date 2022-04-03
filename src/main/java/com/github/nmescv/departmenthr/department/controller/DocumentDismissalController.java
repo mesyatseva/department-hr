@@ -10,10 +10,9 @@ import com.github.nmescv.departmenthr.department.service.DocumentHiringService;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 import static com.github.nmescv.departmenthr.department.dictionary.RoleDict.*;
 import static com.github.nmescv.departmenthr.department.dictionary.RoleDict.HR_ROLE;
@@ -23,18 +22,15 @@ import static com.github.nmescv.departmenthr.department.dictionary.RoleDict.HR_R
 public class DocumentDismissalController {
 
     private final DocumentDismissalService documentDismissalService;
-    private final DocumentHiringService documentHiringService;
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
     private final PositionRepository positionRepository;
 
     public DocumentDismissalController(DocumentDismissalService documentDismissalService,
-                                       DocumentHiringService documentHiringService,
                                        EmployeeRepository employeeRepository,
                                        DepartmentRepository departmentRepository,
                                        PositionRepository positionRepository) {
         this.documentDismissalService = documentDismissalService;
-        this.documentHiringService = documentHiringService;
         this.employeeRepository = employeeRepository;
         this.departmentRepository = departmentRepository;
         this.positionRepository = positionRepository;
@@ -42,7 +38,9 @@ public class DocumentDismissalController {
 
     @GetMapping
     @Secured({EMPLOYEE_ROLE, BOSS_ROLE, HR_ROLE})
-    public String findAllDocuments() {
+    public String findAllDocuments(Model model,
+                                   Principal principal) {
+        model.addAttribute("list", documentDismissalService.findAll(principal.getName()));
         return "document_dismissal/all_documents";
     }
 
@@ -64,8 +62,14 @@ public class DocumentDismissalController {
 
     @PostMapping("/create")
     @Secured(EMPLOYEE_ROLE)
-    public String createDismissalDocumentRequestByEmployee() {
-        return "redirect:/document/dismissal";
+    public String createDismissalDocumentRequestByEmployee(@ModelAttribute("document") DocumentDismissalDto dto,
+                                                           Principal principal) {
+        Long employeeId = employeeRepository.findByTabelNumber(principal.getName()).getId();
+        DocumentDismissalDto createdDocument = documentDismissalService.createRequestToDismiss(dto, employeeId);
+        if (createdDocument == null) {
+            return "document_dismissal/create_by_employee";
+        }
+        return "redirect:/documents/dismissal";
     }
 
 //    @GetMapping
