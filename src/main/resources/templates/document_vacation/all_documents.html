@@ -16,7 +16,7 @@
 
     <!-- tag::create-button[] -->
     <div th:replace="fragments/titles :: title-with-button(#{document.vacation}, #{document.add}, @{/documents/vacation/new}, 'add-user-button')"
-         sec:authorize="hasAuthority('HR')"></div>
+         sec:authorize="hasAuthority('EMPLOYEE')"></div>
     <!-- end::create-button[] -->
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">

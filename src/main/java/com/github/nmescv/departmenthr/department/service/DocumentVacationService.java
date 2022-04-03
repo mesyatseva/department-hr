@@ -91,13 +91,16 @@ public class DocumentVacationService {
         }
 
         for (Role role : user.getRoles()) {
-            if (role.getName().equals(RoleDict.EMPLOYEE_ROLE)) {
+            if (role.getName().equals(EMPLOYEE_ROLE)) {
                 log.info("Vacation Documents - поиск всех документов: Роль - EMPLOYEE");
-                return documentVacationRepository
-                        .findAllByEmployee(employee)
+                val list = documentVacationRepository
+                        .findAllByEmployee(employee);
+                log.info("Vacation Documents - поиск всех документов: Роль - EMPLOYEE: {}", list.toString());
+                return list
                         .stream()
                         .map(documentVacationConverter::toDto)
                         .collect(Collectors.toList());
+
             }
         }
 
@@ -107,8 +110,9 @@ public class DocumentVacationService {
 
     /**
      * ROLE: Сотрудник
-     *
+     * <p>
      * Сотрудник создает заявку на отпуск
+     *
      * @return документ с заявлением на отпуск, статус "Открыт"
      */
     public DocumentVacationDto createRequestForVacation(DocumentVacationDto dto, Long employeeId) {
@@ -135,7 +139,7 @@ public class DocumentVacationService {
      * HR - видит все документы
      *
      * @param documentId идентификатор документа
-     * @param username табельный номер пользователя
+     * @param username   табельный номер пользователя
      * @return информация о документе
      */
     public DocumentVacationDto showById(Long documentId, String username) {
@@ -189,8 +193,9 @@ public class DocumentVacationService {
 
     /**
      * ROLE: Начальник
-     *
+     * <p>
      * Начальник подтверждает отпуск сотрудника
+     *
      * @return согласованный документ, статус "В процессе"
      */
     public DocumentVacationDto approveVacation(Long id, String username) {
@@ -204,6 +209,7 @@ public class DocumentVacationService {
 
     /**
      * ROLE: Начальник
+     *
      * @return отклоненный документ, статус "В процессе"
      */
     public DocumentVacationDto declineVacation(Long id, String username) {
@@ -217,8 +223,9 @@ public class DocumentVacationService {
 
     /**
      * ROLE: HR
-     *
+     * <p>
      * Завершает оформление документа
+     *
      * @return оформленный документ, статус "Закрыт"
      */
     public DocumentVacationDto closeDocument(Long id, String username) {

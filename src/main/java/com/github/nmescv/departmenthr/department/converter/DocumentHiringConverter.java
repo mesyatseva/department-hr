@@ -33,7 +33,7 @@ public class DocumentHiringConverter implements Converter<DocumentHiring, Docume
         entity.setCreatedAt(dto.getCreatedAt());
         entity.setOrderNumber(dto.getOrderNumber());
 
-        Employee employee = employeeRepository.findById(dto.getBossId()).orElse(null);
+        Employee employee = employeeRepository.findById(dto.getEmployeeId()).orElse(null);
 
         if (employee == null) {
             return null;

@@ -1,4 +1,6 @@
-<html xmlns:th="http://www.thymeleaf.org" xmlns:x-transition="http://www.w3.org/1999/xhtml">
+<html
+        xmlns:th="http://www.thymeleaf.org" xmlns:x-transition="http://www.w3.org/1999/xhtml"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <div th:fragment="desktop" class="hidden md:flex md:flex-shrink-0">
     <div class="flex flex-col w-64">
         <div class="flex flex-col flex-grow border-r border-gray-200 pt-5 pb-4 bg-white overflow-y-auto">
@@ -10,11 +12,18 @@
                 <!--                 tag::sidebar[]-->
                 <nav class="flex-1 px-2 bg-white">
                     <a th:replace="fragments/sidebar-buttons :: desktop-button(link=@{/employees}, title=#{menu.employees}, menuItem='employees')"></a>
-<!--                    <a th:replace="fragments/sidebar-buttons :: desktop-button(link=@{/accounts}, title=#{menu.accounts}, menuItem='accounts')"></a>-->
-                    <a th:replace="fragments/sidebar-buttons :: desktop-button(link=@{/documents/hiring}, title=#{menu.hiring}, menuItem='hiring')"></a>
+                    <!--                    <a th:replace="fragments/sidebar-buttons :: desktop-button(link=@{/accounts}, title=#{menu.accounts}, menuItem='accounts')"></a>-->
                     <a th:replace="fragments/sidebar-buttons :: desktop-button(link=@{/documents/vacation}, title=#{menu.vacation}, menuItem='vacation')"></a>
                     <a th:replace="fragments/sidebar-buttons :: desktop-button(link=@{/documents/reassignment}, title=#{menu.reassignment}, menuItem='reassignment')"></a>
                     <a th:replace="fragments/sidebar-buttons :: desktop-button(link=@{/documents/dismissal}, title=#{menu.dismissal}, menuItem='dismissal')"></a>
+
+                    <div sec:authorize="hasAuthority('BOSS')">
+                        <a th:replace="fragments/sidebar-buttons :: desktop-button(link=@{/documents/hiring}, title=#{menu.hiring}, menuItem='hiring')"></a>
+                    </div>
+
+                    <div sec:authorize="hasAuthority('HR')">
+                        <a th:replace="fragments/sidebar-buttons :: desktop-button(link=@{/documents/hiring}, title=#{menu.hiring}, menuItem='hiring')"></a>
+                    </div>
                 </nav>
                 <!--                 end::sidebar[]-->
             </div>
