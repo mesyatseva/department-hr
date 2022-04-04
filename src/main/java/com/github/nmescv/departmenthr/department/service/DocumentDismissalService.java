@@ -15,6 +15,7 @@ import com.github.nmescv.departmenthr.security.entity.User;
 import com.github.nmescv.departmenthr.security.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -168,6 +169,7 @@ public class DocumentDismissalService {
      *
      * @return документ с заявлением на увольнение
      */
+    @Transactional
     public DocumentDismissalDto createRequestToDismiss(DocumentDismissalDto dto, Long employeeId) {
         String orderNumber = UUID.randomUUID().toString();
         if (orderNumber.length() > 30) {
@@ -191,6 +193,7 @@ public class DocumentDismissalService {
      *
      * @return документ с "подписью" от начальника с согласием на увольнение
      */
+    @Transactional
     public DocumentDismissalDto approveDismiss(Long id, String username) {
         DocumentDismissalDto dto = showById(id, username);
         dto.setIsApproved(Boolean.TRUE);
@@ -206,6 +209,7 @@ public class DocumentDismissalService {
      *
      * @return документ с отклонением на увольнение
      */
+    @Transactional
     public DocumentDismissalDto declineDismiss(Long id, String username) {
         DocumentDismissalDto dto = showById(id, username);
         dto.setIsApproved(Boolean.FALSE);
@@ -222,6 +226,7 @@ public class DocumentDismissalService {
      *
      * @return оформленый документ
      */
+    @Transactional
     public DocumentDismissalDto closeDocument(Long id, String username) {
         DocumentDismissalDto dto = showById(id, username);
         dto.setDocumentStatus(DocumentStatusDict.CLOSED.getStatus());

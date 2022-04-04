@@ -46,6 +46,7 @@
                 <div th:if="${document != null}" th:object="${document}">
                     <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
 
+                        <div th:hidden=""
                         <div th:replace="fragments/fields :: textfield('Номер документа', 'orderNumber')"></div>
                         <div th:replace="fragments/fields :: textfield('Создан', 'createdAt')"></div>
                         <div th:replace="fragments/fields :: textfield('Статус документа', 'documentStatus')"></div>
@@ -72,10 +73,11 @@
 
                 <form id="user-form"
                       th:object="${document}"
-                      th:action="@{'/documents/hiring/create/' + ${document.id} + '/department'}"
+                      th:action="@{'/documents/hiring/' + ${document.getId()} + '/create/department'}"
                       method="post"
                       enctype="multipart/form-data">
                     <div>
+                        <input type="hidden" th:field="*{id}"> <!--.-->
                         <div class="sm:col-span-2">
                             <label for="department"
                                    class="block text-sm font-medium text-gray-700">Department</label>

@@ -5,17 +5,20 @@ import com.github.nmescv.departmenthr.department.entity.DocumentHiring;
 import com.github.nmescv.departmenthr.department.entity.Employee;
 import com.github.nmescv.departmenthr.department.repository.DocumentStatusRepository;
 import com.github.nmescv.departmenthr.department.repository.EmployeeRepository;
+import com.github.nmescv.departmenthr.department.repository.PositionRepository;
 import lombok.Synchronized;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DocumentHiringConverter implements Converter<DocumentHiring, DocumentHiringDto> {
 
+    private final PositionRepository positionRepository;
     private final EmployeeRepository employeeRepository;
     private final DocumentStatusRepository documentStatusRepository;
 
-    public DocumentHiringConverter(EmployeeRepository employeeRepository,
+    public DocumentHiringConverter(PositionRepository positionRepository, EmployeeRepository employeeRepository,
                                    DocumentStatusRepository documentStatusRepository) {
+        this.positionRepository = positionRepository;
         this.employeeRepository = employeeRepository;
         this.documentStatusRepository = documentStatusRepository;
     }
@@ -47,12 +50,12 @@ public class DocumentHiringConverter implements Converter<DocumentHiring, Docume
 
         entity.setDocumentStatus(documentStatusRepository.findByName(dto.getDocumentStatus()));
 
-        if (employee.getDepartment() != null) {
+        if (dto.getDepartment() != null) {
             entity.setDepartment(employee.getDepartment());
         }
 
-        if (employee.getPosition() != null) {
-            entity.setPosition(employee.getPosition());
+        if (dto.getPosition() != null) {
+            entity.setPosition(positionRepository.findByName(dto.getPosition()));
         }
 
         if (dto.getBossId() != null) {

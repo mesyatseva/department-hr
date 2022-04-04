@@ -18,6 +18,7 @@ import com.github.nmescv.departmenthr.security.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -111,6 +112,7 @@ public class DocumentReassignmentService {
      * Сотрудник создает заявку на перевод
      * @return документ с заявлением на отпуск, статус "Открыт"
      */
+    @Transactional
     public DocumentReassignmentDto createRequestForReassignment(DocumentReassignmentDto dto, Long employeeId) {
 
         String orderNumber = UUID.randomUUID().toString();
@@ -193,6 +195,7 @@ public class DocumentReassignmentService {
      * Начальник подтверждает перевод сотрудника
      * @return согласованный документ, статус "В процессе"
      */
+    @Transactional
     public DocumentReassignmentDto approveReassignment(Long id, String username) {
         DocumentReassignmentDto dto = showById(id, username);
         dto.setIsApproved(Boolean.TRUE);
@@ -206,6 +209,7 @@ public class DocumentReassignmentService {
      * ROLE: Начальник
      * @return отклоненный документ, статус "В процессе"
      */
+    @Transactional
     public DocumentReassignmentDto declineReassignment(Long id, String username) {
         DocumentReassignmentDto dto = showById(id, username);
         dto.setIsApproved(Boolean.FALSE);
@@ -222,6 +226,7 @@ public class DocumentReassignmentService {
      * Завершает оформление документа
      * @return оформленный документ, статус "Закрыт"
      */
+    @Transactional
     public DocumentReassignmentDto closeDocument(Long id, String username) {
         DocumentReassignmentDto dto = showById(id, username);
         dto.setDocumentStatus(DocumentStatusDict.CLOSED.getStatus());

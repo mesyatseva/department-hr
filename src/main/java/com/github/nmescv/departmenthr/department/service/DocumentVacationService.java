@@ -15,6 +15,7 @@ import com.github.nmescv.departmenthr.security.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.Date;
@@ -115,6 +116,7 @@ public class DocumentVacationService {
      *
      * @return документ с заявлением на отпуск, статус "Открыт"
      */
+    @Transactional
     public DocumentVacationDto createRequestForVacation(DocumentVacationDto dto, Long employeeId) {
 
         String orderNumber = UUID.randomUUID().toString();
