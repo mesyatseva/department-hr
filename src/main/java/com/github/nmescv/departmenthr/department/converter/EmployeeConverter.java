@@ -50,11 +50,17 @@ public class EmployeeConverter implements Converter<Employee, EmployeeDto> {
         entity.setPassNumber(dto.getPassNumber());
         entity.setInn(dto.getInn());
         entity.setSnils(dto.getSnils());
-        entity.setPosition(positionRepository.findByName(dto.getPosition()));
+
+        if (dto.getDepartment() != null) {
+            entity.setDepartment(departmentRepository.findByName(dto.getDepartment()));
+        }
+        if (dto.getPosition() != null) {
+            entity.setPosition(positionRepository.findByName(dto.getPosition()));
+        }
+
         entity.setEducation(educationRepository.findByDegree(dto.getEducation()));
         entity.setUniversity(universityRepository.findByName(dto.getUniversity()));
         entity.setTelephone(dto.getTelephone());
-        entity.setDepartment(departmentRepository.findByName(dto.getDepartment()));
         entity.setSpeciality(specialityRepository.findByName(dto.getSpeciality()));
         return entity;
     }
@@ -79,12 +85,19 @@ public class EmployeeConverter implements Converter<Employee, EmployeeDto> {
         dto.setPassNumber(employee.getPassNumber());
         dto.setInn(employee.getInn());
         dto.setSnils(employee.getSnils());
-        dto.setPosition(employee.getPosition().getName());
+
+        if (employee.getPosition() != null) {
+            dto.setPosition(employee.getPosition().getName());
+        }
+
+        if (employee.getDepartment() != null) {
+            dto.setDepartment(employee.getDepartment().getName());
+        }
+
         dto.setEducation(employee.getEducation().getDegree());
         dto.setUniversity(employee.getUniversity().getName());
         dto.setSpeciality(employee.getSpeciality().getName());
         dto.setTelephone(employee.getTelephone());
-        dto.setDepartment(employee.getDepartment().getName());
         return dto;
     }
 }

@@ -16,6 +16,7 @@ import com.github.nmescv.departmenthr.security.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -158,16 +159,81 @@ public class DocumentHiringService {
      * @param dto - данные документа
      * @return созданный документ в статусе "Открыт"
      */
-    public DocumentHiringDto createHiringDocument(DocumentHiringDto dto, Long hrId) {
+    @Transactional
+    public DocumentHiringDto createHiringDraftStep1(DocumentHiringDto dto, Long hrId) {
         String orderNumber = UUID.randomUUID().toString();
         if (orderNumber.length() > 30) {
             orderNumber = orderNumber.substring(0, 30);
         }
         dto.setOrderNumber(orderNumber);
-        dto.setDocumentStatus(DocumentStatusDict.OPEN.getStatus());
+        dto.setDocumentStatus(DocumentStatusDict.DRAFT.getStatus());
         dto.setHr(hrId);
         dto.setCreatedAt(new Date());
 
+        DocumentHiring entity = documentHiringConverter.toEntity(dto);
+        DocumentHiring saved = documentHiringRepository.save(entity);
+        return documentHiringConverter.toDto(saved);
+    }
+
+    /**
+     * ROLE: HR
+     * Заполняем подразделение (статус - Черновик)
+     *
+     * @param id идентификатор документа
+     * @param department наименование подразделения
+     * @return обновленный документ
+     */
+    public DocumentHiringDto fillDepartmentDraftStep2(Long id, String department) {
+        DocumentHiring documentHiring = documentHiringRepository.findById(id).orElse(null);
+        if (documentHiring == null) {
+            return null;
+        }
+        DocumentHiringDto dto = documentHiringConverter.toDto(documentHiring);
+        dto.setDepartment(department);
+
+        DocumentHiring entity = documentHiringConverter.toEntity(dto);
+        DocumentHiring saved = documentHiringRepository.save(entity);
+        return documentHiringConverter.toDto(saved);
+    }
+
+    /**
+     * ROLE: HR
+     * Заполняем должность (статус - Черновик)
+     *
+     * @param id идентификатор документа
+     * @param position наименование должности
+     * @return обновленный документ
+     */
+    public DocumentHiringDto fillPositionDraftStep3(Long id, String position) {
+        DocumentHiring documentHiring = documentHiringRepository.findById(id).orElse(null);
+        if (documentHiring == null) {
+            return null;
+        }
+        DocumentHiringDto dto = documentHiringConverter.toDto(documentHiring);
+        dto.setPosition(position);
+
+        DocumentHiring entity = documentHiringConverter.toEntity(dto);
+        DocumentHiring saved = documentHiringRepository.save(entity);
+        return documentHiringConverter.toDto(saved);
+    }
+
+    /**
+     * ROLE: HR
+     *
+     * Заполняем начальника и публикуем новый документ на прием
+     *
+     * @param id идентификатор документа
+     * @param bossId идентификатор сотрудника-начальника
+     * @return опубликованный документ
+     */
+    public DocumentHiringDto fillBossAndCreateHiringFinalStep(Long id, Long bossId) {
+        DocumentHiring documentHiring = documentHiringRepository.findById(id).orElse(null);
+        if (documentHiring == null) {
+            return null;
+        }
+        DocumentHiringDto dto = documentHiringConverter.toDto(documentHiring);
+        dto.setBossId(bossId);
+        dto.setDocumentStatus(DocumentStatusDict.OPEN.getStatus());
         DocumentHiring entity = documentHiringConverter.toEntity(dto);
         DocumentHiring saved = documentHiringRepository.save(entity);
         return documentHiringConverter.toDto(saved);

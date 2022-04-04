@@ -21,7 +21,7 @@
 
                 <form id="user-form"
                       th:object="${document}"
-                      th:action="@{/documents/hiring/create}"
+                      th:action="@{/documents/hiring/create/draft}"
                       method="post"
                       enctype="multipart/form-data">
                     <div>
@@ -42,44 +42,6 @@
                                     <option th:each="employee : ${employeeList}"
                                             th:text="${employee.surname} + ' ' + ${employee.name} + ' ' + ${employee.middleName}"
                                             th:value="${employee.getId()}">Greenland <!--.-->
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="sm:col-span-2">
-                                <label for="boss"
-                                       class="block text-sm font-medium text-gray-700">Начальник</label>
-                                <select id="boss"
-                                        class="max-w-lg block focus:ring-green-500 focus:border-green-500 w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md"
-                                        th:field="*{bossId}"> <!--.-->
-                                    <option th:each="boss : ${employeeList}"
-                                            th:text="${boss.surname} + ' ' + ${boss.name} + ' ' + ${boss.middleName}"
-                                            th:value="${boss.getId()}">Начальник <!--.-->
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="sm:col-span-2">
-                                <label for="department"
-                                       class="block text-sm font-medium text-gray-700">Department</label>
-                                <select id="department"
-                                        class="max-w-lg block focus:ring-green-500 focus:border-green-500 w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md"
-                                        th:field="*{department}"> <!--.-->
-                                    <option th:each="department : ${departmentList}"
-                                            th:text="${department.name}"
-                                            th:value="${department.name}">Department - 001/02/32 - QA <!--.-->
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="sm:col-span-2">
-                                <label for="position" class="block text-sm font-medium text-gray-700">Position</label>
-                                <select id="position"
-                                        class="max-w-lg block focus:ring-green-500 focus:border-green-500 w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md"
-                                        th:field="*{position}"> <!--.-->
-                                    <option th:each="position : ${positionList}"
-                                            th:text="${position.name}"
-                                            th:value="${position.name}">Team Leader <!--.-->
                                     </option>
                                 </select>
                             </div>

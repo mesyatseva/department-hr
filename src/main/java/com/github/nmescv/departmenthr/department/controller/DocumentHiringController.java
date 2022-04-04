@@ -1,8 +1,6 @@
 package com.github.nmescv.departmenthr.department.controller;
 
 import com.github.nmescv.departmenthr.department.dto.DocumentHiringDto;
-import com.github.nmescv.departmenthr.department.dto.DocumentReassignmentDto;
-import com.github.nmescv.departmenthr.department.dto.EmployeeDto;
 import com.github.nmescv.departmenthr.department.repository.DepartmentRepository;
 import com.github.nmescv.departmenthr.department.repository.EmployeeRepository;
 import com.github.nmescv.departmenthr.department.repository.PositionRepository;
@@ -67,12 +65,67 @@ public class DocumentHiringController {
                                                   Principal principal) {
 
         Long hrId = employeeRepository.findByTabelNumber(principal.getName()).getId();
-        DocumentHiringDto createdDocument = documentHiringService.createHiringDocument(dto, hrId);
+        DocumentHiringDto createdDocument = documentHiringService.createHiringDraftStep1(dto, hrId);
         if (createdDocument == null) {
             return "document_hiring/create_by_hr";
         }
-        return "redirect:/documents/hiring";
+        return "redirect:/documents/hiring/";
     }
+
+    @PostMapping("/create/draft")
+    @Secured(HR_ROLE)
+    public String createHiringDraft(@ModelAttribute("document") DocumentHiringDto dto,
+                                                  Principal principal) {
+
+        Long hrId = employeeRepository.findByTabelNumber(principal.getName()).getId();
+        DocumentHiringDto createdDocument = documentHiringService.createHiringDraftStep1(dto, hrId);
+        if (createdDocument == null) {
+            return "document_hiring/create_by_hr";
+        }
+        return "redirect:/documents/hiring/create/" + createdDocument.getId() + "/department";
+    }
+
+    @GetMapping("/create/{id}/department")
+    @Secured(HR_ROLE)
+    public String fillDepartmentHiringForm(Model model,
+                                           Principal principal,
+                                           @PathVariable("id") Long id) {
+        model.addAttribute("document", documentHiringService.showById(id, principal.getName()));
+        model.addAttribute("departmentList", departmentRepository.findAll());
+        return "document_hiring/create_by_hr_department";
+    }
+
+    @PostMapping("/create/{id}/department")
+    @Secured(HR_ROLE)
+    public String fillDepartmentHiring() {
+
+        return "";
+    }
+
+    @GetMapping("/create/{id}/position")
+    @Secured(HR_ROLE)
+    public String fillPositionHiringForm() {
+        return "";
+    }
+
+    @PostMapping("/create/{id}/position")
+    @Secured(HR_ROLE)
+    public String fillPositionHiring() {
+        return "";
+    }
+
+    @GetMapping("/create/{id}/final")
+    @Secured(HR_ROLE)
+    public String fillBossHiringForm() {
+        return "";
+    }
+
+    @PostMapping("/create/{id}/final")
+    @Secured(HR_ROLE)
+    public String fillBossHiringAndPublish() {
+        return "";
+    }
+
 
     @GetMapping("/{id}")
     @Secured({EMPLOYEE_ROLE, BOSS_ROLE, HR_ROLE})

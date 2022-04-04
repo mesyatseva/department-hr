@@ -30,7 +30,6 @@
                             <input type="hidden" th:field="*{id}"> <!--.-->
 
                             <!-- tag::textinputs[] -->
-                            <div th:replace="fragments/forms :: textinput(#{user.tabelNumber}, 'tabelNumber', 'sm:col-span-3')"></div>
                             <div th:replace="fragments/forms :: textinput(#{user.surname}, 'surname', 'sm:col-span-3')"></div>
                             <div th:replace="fragments/forms :: textinput(#{user.name}, 'name', 'sm:col-span-3')"></div>
                             <div th:replace="fragments/forms :: textinput(#{user.middleName}, 'middleName', 'sm:col-span-3')"></div>
@@ -45,7 +44,7 @@
 
                             <!--                            tag::citizenship[]-->
                             <div class="sm:col-span-2">
-                                <label for="citizenship" class="block text-sm font-medium text-gray-700">Citizenship</label>
+                                <label for="citizenship" class="block text-sm font-medium text-gray-700">Гражданство</label>
                                 <select id="citizenship"
                                         class="max-w-lg block focus:ring-green-500 focus:border-green-500 w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md"
                                         th:field="*{citizenship}"> <!--.-->
@@ -58,31 +57,7 @@
                             <!--                            end::citizenship[]-->
 
                             <div class="sm:col-span-2">
-                                <label for="department" class="block text-sm font-medium text-gray-700">Department</label>
-                                <select id="department"
-                                        class="max-w-lg block focus:ring-green-500 focus:border-green-500 w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md"
-                                        th:field="*{department}"> <!--.-->
-                                    <option th:each="department : ${departmentList}"
-                                            th:text="${department.name}"
-                                            th:value="${department.name}">Department - 001/02/32 - QA <!--.-->
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="sm:col-span-2">
-                                <label for="position" class="block text-sm font-medium text-gray-700">Position</label>
-                                <select id="position"
-                                        class="max-w-lg block focus:ring-green-500 focus:border-green-500 w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md"
-                                        th:field="*{position}"> <!--.-->
-                                    <option th:each="position : ${positionList}"
-                                            th:text="${position.name}"
-                                            th:value="${position.name}">Team Leader <!--.-->
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="sm:col-span-2">
-                                <label for="university" class="block text-sm font-medium text-gray-700">University</label>
+                                <label for="university" class="block text-sm font-medium text-gray-700">Университет</label>
                                 <select id="university"
                                         class="max-w-lg block focus:ring-green-500 focus:border-green-500 w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md"
                                         th:field="*{university}"> <!--.-->
@@ -94,7 +69,7 @@
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label for="education" class="block text-sm font-medium text-gray-700">Education</label>
+                                <label for="education" class="block text-sm font-medium text-gray-700">Степень образования</label>
                                 <select id="education"
                                         class="max-w-lg block focus:ring-green-500 focus:border-green-500 w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md"
                                         th:field="*{education}"> <!--.-->
@@ -106,7 +81,7 @@
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label for="userRole" class="block text-sm font-medium text-gray-700">Speciality</label>
+                                <label for="userRole" class="block text-sm font-medium text-gray-700">Специальность</label>
                                 <select id="userRole"
                                         class="max-w-lg block focus:ring-green-500 focus:border-green-500 w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md"
                                         th:field="*{speciality}"> <!--.-->
