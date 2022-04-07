@@ -1,10 +1,15 @@
 package com.github.nmescv.departmenthr.department.controller;
 
+import com.github.nmescv.departmenthr.department.dto.DocumentHiringDto;
 import com.github.nmescv.departmenthr.department.dto.DocumentReassignmentDto;
+import com.github.nmescv.departmenthr.department.dto.StructureDto;
+import com.github.nmescv.departmenthr.department.entity.Department;
 import com.github.nmescv.departmenthr.department.repository.DepartmentRepository;
 import com.github.nmescv.departmenthr.department.repository.EmployeeRepository;
 import com.github.nmescv.departmenthr.department.repository.PositionRepository;
 import com.github.nmescv.departmenthr.department.service.DocumentReassignmentService;
+import com.github.nmescv.departmenthr.department.service.StructureService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,19 +19,23 @@ import java.security.Principal;
 
 import static com.github.nmescv.departmenthr.department.dictionary.RoleDict.*;
 
+@Slf4j
 @Controller
 @RequestMapping("/documents/reassignment")
 public class DocumentReassignmentController {
 
+    private final StructureService structureService;
     private final DocumentReassignmentService documentReassignmentService;
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
     private final PositionRepository positionRepository;
 
-    public DocumentReassignmentController(DocumentReassignmentService documentReassignmentService,
+    public DocumentReassignmentController(StructureService structureService,
+                                          DocumentReassignmentService documentReassignmentService,
                                           EmployeeRepository employeeRepository,
                                           DepartmentRepository departmentRepository,
                                           PositionRepository positionRepository) {
+        this.structureService = structureService;
         this.documentReassignmentService = documentReassignmentService;
         this.employeeRepository = employeeRepository;
         this.departmentRepository = departmentRepository;
@@ -43,24 +52,59 @@ public class DocumentReassignmentController {
 
     @GetMapping("/new")
     @Secured(EMPLOYEE_ROLE)
-    public String showReassignmentDocumentCreatingForm(Model model) {
-        model.addAttribute("positionList", positionRepository.findAll());
+    public String showReassignmentDocumentCreatingForm(Model model,
+                                                       Principal principal) {
+
+        StructureDto structure = structureService.makeStructureOfDepartment(principal.getName());
         model.addAttribute("departmentList", departmentRepository.findAll());
-        model.addAttribute("employeeList", employeeRepository.findAll());
-        model.addAttribute("document", new DocumentReassignmentDto());
-        return "document_reassignment/create_by_employee";
+        model.addAttribute("structure", structure);
+
+        DocumentReassignmentDto reassignmentDto = new DocumentReassignmentDto();
+        reassignmentDto.setDepartment(structure.getDepartment());
+        reassignmentDto.setPosition(structure.getPosition());
+
+        model.addAttribute("document", reassignmentDto);
+        return "document_reassignment/create_by_employee_draft";
     }
 
-    @PostMapping("/create")
+    @PostMapping("/draft")
     @Secured(EMPLOYEE_ROLE)
-    public String createReassignmentDocumentRequestByEmployee(@ModelAttribute("document") DocumentReassignmentDto dto,
+    public String createDraftRequestByEmployee(@ModelAttribute("document") DocumentReassignmentDto dto,
                                                               Principal principal) {
-        Long employeeId = employeeRepository.findByTabelNumber(principal.getName()).getId();
-        DocumentReassignmentDto createdDocument = documentReassignmentService.createRequestForReassignment(dto, employeeId);
-        if (createdDocument == null) {
-            return "document_reassignment/create_by_employee";
+        log.info(dto.toString());
+        DocumentReassignmentDto draft = documentReassignmentService.createDraftRequest(dto, principal.getName());
+        if (draft == null) {
+            return "document_reassignment/create_by_employee_draft";
         }
-        return "redirect:/documents/reassignment";
+        return "redirect:/documents/reassignment/" + draft.getId() + "/publish";
+    }
+
+
+    @GetMapping("/{id}/publish")
+    @Secured(EMPLOYEE_ROLE)
+    public String publishReassignmentForm(Model model,
+                                          Principal principal,
+                                          @PathVariable("id") Long id) {
+        StructureDto structure = structureService.makeStructureOfDepartment(principal.getName());
+        DocumentReassignmentDto reassignmentDto = documentReassignmentService.showById(id, principal.getName());
+        Department department = departmentRepository.findByName(reassignmentDto.getNewDepartment());
+        model.addAttribute("positionList", positionRepository.findAllByDepartment(department.getId()));
+        model.addAttribute("structure", structure);
+        model.addAttribute("document", reassignmentDto);
+        return "document_reassignment/create_by_employee_final";
+    }
+
+    @PostMapping("/{id}/publish")
+    @Secured(EMPLOYEE_ROLE)
+    public String publishReassignment(@PathVariable("id") Long id,
+                                      @ModelAttribute("document") DocumentReassignmentDto document,
+                                      Principal principal) {
+        DocumentReassignmentDto dto = documentReassignmentService.showById(id, principal.getName());
+        DocumentReassignmentDto createdDocument = documentReassignmentService.publishRequest(dto, document.getNewPosition());
+        if (createdDocument == null) {
+            return "document_reassignment/create_by_employee_final";
+        }
+        return "redirect:/documents/reassignment/" + createdDocument.getId();
     }
 
     @GetMapping("/{id}")

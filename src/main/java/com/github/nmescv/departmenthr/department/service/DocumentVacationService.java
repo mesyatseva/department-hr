@@ -15,6 +15,7 @@ import com.github.nmescv.departmenthr.security.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.Date;
@@ -115,7 +116,8 @@ public class DocumentVacationService {
      *
      * @return документ с заявлением на отпуск, статус "Открыт"
      */
-    public DocumentVacationDto createRequestForVacation(DocumentVacationDto dto, Long employeeId) {
+    @Transactional
+    public DocumentVacationDto createRequestForVacation(DocumentVacationDto dto, String username) {
 
         String orderNumber = UUID.randomUUID().toString();
         if (orderNumber.length() > 30) {
@@ -123,7 +125,7 @@ public class DocumentVacationService {
         }
         dto.setOrderNumber(orderNumber);
         dto.setDocumentStatus(DocumentStatusDict.OPEN.getStatus());
-        dto.setEmployeeId(employeeId);
+        dto.setEmployeeId(employeeRepository.findByTabelNumber(username).getId());
         dto.setCreatedAt(new Date());
 
         DocumentVacation entity = documentVacationConverter.toEntity(dto);

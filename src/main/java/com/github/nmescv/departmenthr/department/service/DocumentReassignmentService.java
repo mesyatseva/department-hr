@@ -3,21 +3,19 @@ package com.github.nmescv.departmenthr.department.service;
 import com.github.nmescv.departmenthr.department.converter.DocumentReassignmentConverter;
 import com.github.nmescv.departmenthr.department.dictionary.DocumentStatusDict;
 import com.github.nmescv.departmenthr.department.dictionary.RoleDict;
-import com.github.nmescv.departmenthr.department.dto.DocumentDismissalDto;
 import com.github.nmescv.departmenthr.department.dto.DocumentReassignmentDto;
-import com.github.nmescv.departmenthr.department.dto.DocumentVacationDto;
-import com.github.nmescv.departmenthr.department.entity.DocumentDismissal;
 import com.github.nmescv.departmenthr.department.entity.DocumentReassignment;
-import com.github.nmescv.departmenthr.department.entity.DocumentVacation;
 import com.github.nmescv.departmenthr.department.entity.Employee;
+import com.github.nmescv.departmenthr.department.repository.DepartmentRepository;
 import com.github.nmescv.departmenthr.department.repository.DocumentReassignmentRepository;
 import com.github.nmescv.departmenthr.department.repository.EmployeeRepository;
+import com.github.nmescv.departmenthr.department.repository.PositionRepository;
 import com.github.nmescv.departmenthr.security.entity.Role;
 import com.github.nmescv.departmenthr.security.entity.User;
 import com.github.nmescv.departmenthr.security.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -30,15 +28,21 @@ import static com.github.nmescv.departmenthr.department.dictionary.RoleDict.*;
 @Service
 public class DocumentReassignmentService {
 
+    private final PositionRepository positionRepository;
+    private final DepartmentRepository departmentRepository;
     private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
     private final DocumentReassignmentConverter documentReassignmentConverter;
     private final DocumentReassignmentRepository documentReassignmentRepository;
 
-    public DocumentReassignmentService(EmployeeRepository employeeRepository,
+    public DocumentReassignmentService(PositionRepository positionRepository,
+                                       DepartmentRepository departmentRepository,
+                                       EmployeeRepository employeeRepository,
                                        UserRepository userRepository,
                                        DocumentReassignmentConverter documentReassignmentConverter,
                                        DocumentReassignmentRepository documentReassignmentRepository) {
+        this.positionRepository = positionRepository;
+        this.departmentRepository = departmentRepository;
         this.employeeRepository = employeeRepository;
         this.userRepository = userRepository;
         this.documentReassignmentConverter = documentReassignmentConverter;
@@ -111,7 +115,8 @@ public class DocumentReassignmentService {
      * Сотрудник создает заявку на перевод
      * @return документ с заявлением на отпуск, статус "Открыт"
      */
-    public DocumentReassignmentDto createRequestForReassignment(DocumentReassignmentDto dto, Long employeeId) {
+    @Transactional
+    public DocumentReassignmentDto createDraftRequest(DocumentReassignmentDto dto, String username) {
 
         String orderNumber = UUID.randomUUID().toString();
         if (orderNumber.length() > 30) {
@@ -119,10 +124,27 @@ public class DocumentReassignmentService {
         }
 
         dto.setOrderNumber(orderNumber);
-        dto.setDocumentStatus(DocumentStatusDict.OPEN.getStatus());
-        dto.setEmployeeId(employeeId);
+        dto.setDocumentStatus(DocumentStatusDict.DRAFT.getStatus());
+        dto.setEmployeeId(employeeRepository.findByTabelNumber(username).getId());
         dto.setCreatedAt(new Date());
 
+        DocumentReassignment entity = documentReassignmentConverter.toEntity(dto);
+        DocumentReassignment saved = documentReassignmentRepository.save(entity);
+        return documentReassignmentConverter.toDto(saved);
+    }
+
+    @Transactional
+    public DocumentReassignmentDto publishRequest(DocumentReassignmentDto dto, String position) {
+
+        log.info("Before Publish: " + dto.toString());
+        DocumentReassignment documentReassignment = documentReassignmentRepository.findById(dto.getId()).orElse(null);
+        if (documentReassignment == null) {
+            return null;
+        }
+
+        dto.setBossId(departmentRepository.findByName(dto.getNewDepartment()).getBoss().getId());
+        dto.setNewPosition(position);
+        dto.setDocumentStatus(DocumentStatusDict.OPEN.getStatus());
         DocumentReassignment entity = documentReassignmentConverter.toEntity(dto);
         DocumentReassignment saved = documentReassignmentRepository.save(entity);
         return documentReassignmentConverter.toDto(saved);
@@ -193,10 +215,17 @@ public class DocumentReassignmentService {
      * Начальник подтверждает перевод сотрудника
      * @return согласованный документ, статус "В процессе"
      */
+    @Transactional
     public DocumentReassignmentDto approveReassignment(Long id, String username) {
         DocumentReassignmentDto dto = showById(id, username);
         dto.setIsApproved(Boolean.TRUE);
         dto.setDocumentStatus(DocumentStatusDict.IN_PROCESS.getStatus());
+
+        Employee employee = employeeRepository.findById(dto.getEmployeeId()).orElse(null);
+        assert employee != null;
+        employee.setDepartment(departmentRepository.findByName(dto.getNewDepartment()));
+        employee.setPosition(positionRepository.findByName(dto.getNewPosition()));
+        employeeRepository.save(employee);
         DocumentReassignment entity = documentReassignmentConverter.toEntity(dto);
         DocumentReassignment saved = documentReassignmentRepository.save(entity);
         return documentReassignmentConverter.toDto(saved);
@@ -206,6 +235,7 @@ public class DocumentReassignmentService {
      * ROLE: Начальник
      * @return отклоненный документ, статус "В процессе"
      */
+    @Transactional
     public DocumentReassignmentDto declineReassignment(Long id, String username) {
         DocumentReassignmentDto dto = showById(id, username);
         dto.setIsApproved(Boolean.FALSE);
@@ -222,6 +252,7 @@ public class DocumentReassignmentService {
      * Завершает оформление документа
      * @return оформленный документ, статус "Закрыт"
      */
+    @Transactional
     public DocumentReassignmentDto closeDocument(Long id, String username) {
         DocumentReassignmentDto dto = showById(id, username);
         dto.setDocumentStatus(DocumentStatusDict.CLOSED.getStatus());

@@ -17,11 +17,7 @@
                     <a th:replace="fragments/sidebar-buttons :: desktop-button(link=@{/documents/reassignment}, title=#{menu.reassignment}, menuItem='reassignment')"></a>
                     <a th:replace="fragments/sidebar-buttons :: desktop-button(link=@{/documents/dismissal}, title=#{menu.dismissal}, menuItem='dismissal')"></a>
 
-                    <div sec:authorize="hasAuthority('BOSS')">
-                        <a th:replace="fragments/sidebar-buttons :: desktop-button(link=@{/documents/hiring}, title=#{menu.hiring}, menuItem='hiring')"></a>
-                    </div>
-
-                    <div sec:authorize="hasAuthority('HR')">
+                    <div sec:authorize="hasAuthority('BOSS') || hasAuthority('HR')">
                         <a th:replace="fragments/sidebar-buttons :: desktop-button(link=@{/documents/hiring}, title=#{menu.hiring}, menuItem='hiring')"></a>
                     </div>
                 </nav>

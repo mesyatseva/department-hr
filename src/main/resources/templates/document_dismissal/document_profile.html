@@ -4,7 +4,7 @@
         xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
         xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:x-transition="http://www.w3.org/1999/xhtml"
         layout:decorate="~{layout/layout}"
-        th:with="activeMenuItem='vacation'">
+        th:with="activeMenuItem='dismissal'">
 <head>
     <meta charset="UTF-8">
     <title>Увольнение</title>
@@ -39,6 +39,19 @@
              sec:authorize="hasAuthority('HR')"></div>
     </div>
 
+<!--    <div th:if="${document.documentStatus=='Закрыт'}">-->
+<!--        <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">-->
+<!--            <h1 class="text-2xl font-semibold text-gray-900"-->
+<!--                th:text="#{document.dismissal}">Увольнение с работы</h1>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div th:unless="${document.documentStatus != 'Закрыт'}">-->
+<!--        <div sec:authorize="hasAuthority('EMPLOYEE')" class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">-->
+<!--            <h1 class="text-2xl font-semibold text-gray-900"-->
+<!--                th:text="#{document.dismissal}">Увольнение с работы</h1>-->
+<!--        </div>-->
+<!--    </div>-->
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
         <div class="py-4">
             <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
@@ -68,8 +81,8 @@
                             </p>
                         </div>
 
-                        <div th:replace="fragments/fields :: textfield('Сотрудник ID', 'employeeId')"></div>
-                        <div th:replace="fragments/fields :: textfield('Начальник ID', 'bossId')"></div>
+                        <div th:replace="fragments/fields :: textfield('Сотрудник', 'employeeFullName')"></div>
+                        <div th:replace="fragments/fields :: textfield('Начальник', 'bossFullName')"></div>
                         <div th:replace="fragments/fields :: textfield('Подразделение', 'department')"></div>
                         <div th:replace="fragments/fields :: textfield('Должность', 'position')"></div>
                         <div th:replace="fragments/fields :: textfield('Дата увольнения', 'dismissalDate')"></div>

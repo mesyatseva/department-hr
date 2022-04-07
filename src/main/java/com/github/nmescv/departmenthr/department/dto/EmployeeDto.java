@@ -18,7 +18,6 @@ public class EmployeeDto {
 
     private Long id;
 
-    @NotBlank(message = "Поле 'Tabel Number' должно быть заполнено уникальным значением")
     private String tabelNumber;
 
     @NotBlank(message = "Поле 'Surname' должно быть заполнено")
@@ -51,7 +50,6 @@ public class EmployeeDto {
     @Size(min = 11, max = 11, message = "Snils has only 11 numbers")
     private String snils;
 
-    @NotBlank(message = "Поле 'Position' должно быть заполнено")
     private String position;
 
     @NotBlank(message = "Поле 'Education' должно быть заполнено")
@@ -66,6 +64,5 @@ public class EmployeeDto {
     @NotBlank(message = "Поле 'Telephone' должно быть заполнено")
     private String telephone;
 
-    @NotBlank(message = "Поле 'Department' должно быть заполнено")
     private String department;
 }

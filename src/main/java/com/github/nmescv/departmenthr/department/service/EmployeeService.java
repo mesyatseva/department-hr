@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,8 +65,9 @@ public class EmployeeService {
      */
     @Transactional
     public EmployeeDto createNewEmployee(EmployeeDto employeeDto) {
+        employeeDto.setTabelNumber(UUID.randomUUID().toString().replace("-", "").substring(0, 10));
         Employee employee = employeeConverter.toEntity(employeeDto);
-        Employee savedEmployee = employeeRepository.save(employee);
+        Employee savedEmployee = employeeRepository.saveAndFlush(employee);
         return employeeConverter.toDto(savedEmployee);
     }
 }

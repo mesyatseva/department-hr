@@ -15,6 +15,7 @@ import com.github.nmescv.departmenthr.security.entity.User;
 import com.github.nmescv.departmenthr.security.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -168,7 +169,11 @@ public class DocumentDismissalService {
      *
      * @return документ с заявлением на увольнение
      */
-    public DocumentDismissalDto createRequestToDismiss(DocumentDismissalDto dto, Long employeeId) {
+    @Transactional
+    public DocumentDismissalDto createRequestToDismiss(DocumentDismissalDto dto, String username) {
+
+        log.info(dto.toString());
+
         String orderNumber = UUID.randomUUID().toString();
         if (orderNumber.length() > 30) {
             orderNumber = orderNumber.substring(0, 30);
@@ -176,7 +181,7 @@ public class DocumentDismissalService {
 
         dto.setOrderNumber(orderNumber);
         dto.setDocumentStatus(DocumentStatusDict.OPEN.getStatus());
-        dto.setEmployeeId(employeeId);
+        dto.setEmployeeId(employeeRepository.findByTabelNumber(username).getId());
         dto.setCreatedAt(new Date());
 
         DocumentDismissal entity = documentDismissalConverter.toEntity(dto);
@@ -191,6 +196,7 @@ public class DocumentDismissalService {
      *
      * @return документ с "подписью" от начальника с согласием на увольнение
      */
+    @Transactional
     public DocumentDismissalDto approveDismiss(Long id, String username) {
         DocumentDismissalDto dto = showById(id, username);
         dto.setIsApproved(Boolean.TRUE);
@@ -206,6 +212,7 @@ public class DocumentDismissalService {
      *
      * @return документ с отклонением на увольнение
      */
+    @Transactional
     public DocumentDismissalDto declineDismiss(Long id, String username) {
         DocumentDismissalDto dto = showById(id, username);
         dto.setIsApproved(Boolean.FALSE);
@@ -222,6 +229,7 @@ public class DocumentDismissalService {
      *
      * @return оформленый документ
      */
+    @Transactional
     public DocumentDismissalDto closeDocument(Long id, String username) {
         DocumentDismissalDto dto = showById(id, username);
         dto.setDocumentStatus(DocumentStatusDict.CLOSED.getStatus());

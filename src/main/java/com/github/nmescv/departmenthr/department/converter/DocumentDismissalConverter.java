@@ -5,6 +5,7 @@ import com.github.nmescv.departmenthr.department.entity.DocumentDismissal;
 import com.github.nmescv.departmenthr.department.entity.Employee;
 import com.github.nmescv.departmenthr.department.repository.DocumentStatusRepository;
 import com.github.nmescv.departmenthr.department.repository.EmployeeRepository;
+import com.github.nmescv.departmenthr.department.utils.EmployeeUtils;
 import lombok.Synchronized;
 import org.springframework.stereotype.Component;
 
@@ -40,9 +41,11 @@ public class DocumentDismissalConverter implements Converter<DocumentDismissal, 
         }
 
         Employee boss = employeeRepository.findById(dto.getBossId()).orElse(null);
+        dto.setEmployeeFullName(EmployeeUtils.fullName(entity.getEmployee()));
 
         entity.setEmployee(employee);
         entity.setBoss(boss);
+
 
         if (dto.getHr() != null) {
             entity.setHr(employeeRepository.findById(dto.getHr()).orElse(null));
@@ -72,10 +75,13 @@ public class DocumentDismissalConverter implements Converter<DocumentDismissal, 
         dto.setCreatedAt(entity.getCreatedAt());
         dto.setOrderNumber(entity.getOrderNumber());
         dto.setEmployeeId(entity.getEmployee().getId());
+        dto.setEmployeeFullName(EmployeeUtils.fullName(entity.getEmployee()));
         dto.setBossId(entity.getBoss().getId());
+        dto.setBossFullName(EmployeeUtils.fullName(entity.getBoss()));
 
         if (entity.getHr() != null) {
             dto.setHr(entity.getHr().getId());
+            dto.setHrFullName(EmployeeUtils.fullName(entity.getHr()));
         }
 
         dto.setDocumentStatus(entity.getDocumentStatus().getName());

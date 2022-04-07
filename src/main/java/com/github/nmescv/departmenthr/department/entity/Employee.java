@@ -51,6 +51,10 @@ public class Employee {
     private String snils;
 
     @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
+
+    @ManyToOne
     @JoinColumn(name = "position_id")
     private Position position;
 
@@ -68,8 +72,4 @@ public class Employee {
 
     @Column(name = "telephone")
     private String telephone;
-
-    @ManyToOne
-    @JoinColumn(name = "department_id")
-    private Department department;
 }
