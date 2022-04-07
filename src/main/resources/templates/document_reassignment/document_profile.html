@@ -39,13 +39,20 @@
              sec:authorize="hasAuthority('HR')"></div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-        <div class="py-4">
-            <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
+    <div th:if="${document.documentStatus=='Черновик'}">
+        <div th:replace="fragments/titles :: title-with-button(#{document.reassignment}, #{continue}, @{'/documents/reassignment/' + ${document.id} + '/publish'}, 'add-user-button')"
+             sec:authorize="hasAuthority('EMPLOYEE')"></div>
+    </div>
 
-                <div th:if="${document != null}" th:object="${document}">
+    <div th:if="${document != null}" th:object="${document}">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+            <div class="py-4">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+                    <h3 class="text-2xl font-semibold text-gray-900"
+                        th:text="#{document.vacation.status}">Документ: Отпуск</h3>
+                </div>
+                <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
                     <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-
                         <div th:replace="fragments/fields :: textfield('Номер документа', 'orderNumber')"></div>
                         <div th:replace="fragments/fields :: textfield('Создан', 'createdAt')"></div>
                         <div th:replace="fragments/fields :: textfield('Статус документа', 'documentStatus')"></div>
@@ -67,27 +74,50 @@
                                 Field
                             </p>
                         </div>
-
+                    </div>
+                </div>
+            </div>
+            <div class="py-4">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+                    <h3 class="text-2xl font-semibold text-gray-900"
+                        th:text="#{document.reassignment.current}">Документ: Отпуск</h3>
+                </div>
+                <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
+                    <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                        <div th:replace="fragments/fields :: textfield('Текущее подразделение', 'department')"></div>
+                        <div th:replace="fragments/fields :: textfield('Текущая должность', 'position')"></div>
                         <div th:replace="fragments/fields :: textfield('Сотрудник', 'employeeFullName')"></div>
-                        <div th:replace="fragments/fields :: textfield('Начальник', 'bossFullName')"></div>
-                        <div th:replace="fragments/fields :: textfield('Подразделение', 'department')"></div>
-                        <div th:replace="fragments/fields :: textfield('Должность', 'position')"></div>
-                        <div th:replace="fragments/fields :: textfield('Новое подразделение', 'newDepartment')"></div>
-                        <div th:replace="fragments/fields :: textfield('Новая должность', 'newPosition')"></div>
-                        <div th:replace="fragments/fields :: textfield('Зарплата', 'salary')"></div>
-
                         <div th:if="${document.hr != null}">
                             <div th:replace="fragments/fields :: textfield('HR', 'hr')"></div>
                         </div>
                     </div>
                 </div>
-
-                <div th:if="${document == null}" class="col-md-9 col-md-offset-3">
-                    <div class="form-group">
-                        <h2 th:text="${notFound}">Отсутствует документ</h2>>
+            </div>
+            <div class="py-4">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+                    <h3 class="text-2xl font-semibold text-gray-900"
+                        th:text="#{document.reassignment.details}">Документ: Отпуск</h3>
+                </div>
+                <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
+                    <div th:if="${document.bossId != null}"
+                         class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                        <div th:replace="fragments/fields :: textfield('Новое подразделение', 'newDepartment')"></div>
+                        <div th:replace="fragments/fields :: textfield('Зарплата', 'salary')"></div>
+                        <div th:replace="fragments/fields :: textfield('Новый начальник', 'bossFullName')"></div>
+                        <div th:replace="fragments/fields :: textfield('Новая должность', 'newPosition')"></div>
+                    </div>
+                    <div th:unless="${document.bossId != null}"
+                         class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                        <div th:replace="fragments/fields :: textfield('Новое подразделение', 'newDepartment')"></div>
+                        <div th:replace="fragments/fields :: textfield('Зарплата', 'salary')"></div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div th:if="${document == null}" class="col-md-9 col-md-offset-3">
+        <div class="form-group">
+            <h2 th:text="${notFound}">Отсутствует документ</h2>>
         </div>
     </div>
 </div>
