@@ -48,11 +48,11 @@
                                 <td th:replace="fragments/table :: date(date=${document.createdAt})"></td>
                                 <td th:replace="fragments/table :: date(date=${document.reassignmentDate})"></td>
                                 <td th:replace="fragments/table :: data(contents=${document.orderNumber})"></td>
-                                <td th:replace="fragments/table :: data(contents=${document.employeeId})"></td>
-                                <td th:replace="fragments/table :: data(contents=${document.bossId})"></td>
+                                <td th:replace="fragments/table :: data(contents=${document.employeeFullName})"></td>
+                                <td th:replace="fragments/table :: data(contents=${document.bossFullName})"></td>
                                 <td th:replace="fragments/table :: data(contents=${document.getDocumentStatus()})"></td>
-                                <td th:replace="fragments/table :: data(contents=${document.department})"></td>
-                                <td th:replace="fragments/table :: data(contents=${document.position})"></td>
+                                <td th:replace="fragments/table :: data(contents=${document.newDepartment})"></td>
+                                <td th:replace="fragments/table :: data(contents=${document.newPosition})"></td>
                                 <td th:replace="fragments/table :: dataWithLink('Show', @{'/documents/reassignment/'+ ${document.id}})"></td>
 
                                 <!-- end::td-admin[] -->

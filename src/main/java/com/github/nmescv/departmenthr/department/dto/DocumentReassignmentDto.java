@@ -29,4 +29,8 @@ public class DocumentReassignmentDto {
     private String newDepartment;
     private Double salary;
     private Boolean isApproved;
+
+    private String employeeFullName;
+    private String bossFullName;
+    private String hrFullName;
 }

@@ -100,7 +100,7 @@ public class DocumentReassignmentController {
                                       @ModelAttribute("document") DocumentReassignmentDto document,
                                       Principal principal) {
         DocumentReassignmentDto dto = documentReassignmentService.showById(id, principal.getName());
-        DocumentReassignmentDto createdDocument = documentReassignmentService.publishRequest(dto, document.getPosition());
+        DocumentReassignmentDto createdDocument = documentReassignmentService.publishRequest(dto, document.getNewPosition());
         if (createdDocument == null) {
             return "document_reassignment/create_by_employee_final";
         }

@@ -136,14 +136,15 @@ public class DocumentReassignmentService {
     @Transactional
     public DocumentReassignmentDto publishRequest(DocumentReassignmentDto dto, String position) {
 
+        log.info("Before Publish: " + dto.toString());
         DocumentReassignment documentReassignment = documentReassignmentRepository.findById(dto.getId()).orElse(null);
         if (documentReassignment == null) {
             return null;
         }
 
         dto.setBossId(departmentRepository.findByName(dto.getNewDepartment()).getBoss().getId());
-        dto.setDocumentStatus(DocumentStatusDict.OPEN.getStatus());
         dto.setNewPosition(position);
+        dto.setDocumentStatus(DocumentStatusDict.OPEN.getStatus());
         DocumentReassignment entity = documentReassignmentConverter.toEntity(dto);
         DocumentReassignment saved = documentReassignmentRepository.save(entity);
         return documentReassignmentConverter.toDto(saved);
@@ -222,8 +223,8 @@ public class DocumentReassignmentService {
 
         Employee employee = employeeRepository.findById(dto.getEmployeeId()).orElse(null);
         assert employee != null;
-        employee.setDepartment(departmentRepository.findByName(dto.getDepartment()));
-        employee.setPosition(positionRepository.findByName(dto.getPosition()));
+        employee.setDepartment(departmentRepository.findByName(dto.getNewDepartment()));
+        employee.setPosition(positionRepository.findByName(dto.getNewPosition()));
         employeeRepository.save(employee);
         DocumentReassignment entity = documentReassignmentConverter.toEntity(dto);
         DocumentReassignment saved = documentReassignmentRepository.save(entity);

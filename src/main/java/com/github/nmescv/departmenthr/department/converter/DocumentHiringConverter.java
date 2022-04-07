@@ -6,6 +6,7 @@ import com.github.nmescv.departmenthr.department.entity.Employee;
 import com.github.nmescv.departmenthr.department.repository.DocumentStatusRepository;
 import com.github.nmescv.departmenthr.department.repository.EmployeeRepository;
 import com.github.nmescv.departmenthr.department.repository.PositionRepository;
+import com.github.nmescv.departmenthr.department.utils.EmployeeUtils;
 import lombok.Synchronized;
 import org.springframework.stereotype.Component;
 
@@ -84,13 +85,16 @@ public class DocumentHiringConverter implements Converter<DocumentHiring, Docume
         dto.setCreatedAt(entity.getCreatedAt());
         dto.setOrderNumber(entity.getOrderNumber());
         dto.setEmployeeId(entity.getEmployee().getId());
+        dto.setEmployeeFullName(EmployeeUtils.fullName(entity.getEmployee()));
 
         if (entity.getBoss() != null) {
             dto.setBossId(entity.getBoss().getId());
+            dto.setBossFullName(EmployeeUtils.fullName(entity.getBoss()));
         }
 
         if (entity.getHr() != null) {
             dto.setHr(entity.getHr().getId());
+            dto.setHrFullName(EmployeeUtils.fullName(entity.getHr()));
         }
 
         dto.setDocumentStatus(entity.getDocumentStatus().getName());

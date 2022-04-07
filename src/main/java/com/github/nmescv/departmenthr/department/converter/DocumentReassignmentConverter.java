@@ -7,9 +7,12 @@ import com.github.nmescv.departmenthr.department.repository.DepartmentRepository
 import com.github.nmescv.departmenthr.department.repository.DocumentStatusRepository;
 import com.github.nmescv.departmenthr.department.repository.EmployeeRepository;
 import com.github.nmescv.departmenthr.department.repository.PositionRepository;
+import com.github.nmescv.departmenthr.department.utils.EmployeeUtils;
 import lombok.Synchronized;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class DocumentReassignmentConverter implements Converter<DocumentReassignment, DocumentReassignmentDto> {
 
@@ -64,6 +67,7 @@ public class DocumentReassignmentConverter implements Converter<DocumentReassign
         entity.setPosition(positionRepository.findByName(dto.getPosition()));
         entity.setReassignmentDate(dto.getReassignmentDate());
 
+        log.info(dto.getNewPosition());
         if (dto.getNewPosition() != null) {
             entity.setNewPosition(positionRepository.findByName(dto.getNewPosition()));
         }
@@ -87,13 +91,16 @@ public class DocumentReassignmentConverter implements Converter<DocumentReassign
         dto.setCreatedAt(entity.getCreatedAt());
         dto.setOrderNumber(entity.getOrderNumber());
         dto.setEmployeeId(entity.getEmployee().getId());
+        dto.setEmployeeFullName(EmployeeUtils.fullName(entity.getEmployee()));
 
         if (entity.getBoss() != null) {
             dto.setBossId(entity.getBoss().getId());
+            dto.setBossFullName(EmployeeUtils.fullName(entity.getBoss()));
         }
 
         if (entity.getHr() != null) {
             dto.setHr(entity.getHr().getId());
+            dto.setHrFullName(EmployeeUtils.fullName(entity.getHr()));
         }
 
         dto.setDocumentStatus(entity.getDocumentStatus().getName());

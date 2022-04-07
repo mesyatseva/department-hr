@@ -23,9 +23,9 @@
 
                 <div th:if="${structure != null}" th:object="${structure}">
                     <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                        <div th:replace="fragments/fields :: textfield('Подразделение', 'department')"></div>
-                        <div th:replace="fragments/fields :: textfield('Должность', 'position')"></div>
-                        <div th:replace="fragments/fields :: textfield('Начальник', 'bossFullName')"></div>
+                        <div th:replace="fragments/fields :: textfield('Текущее подразделение', 'department')"></div>
+                        <div th:replace="fragments/fields :: textfield('Текущая должность', 'position')"></div>
+                        <div th:replace="fragments/fields :: textfield('Начальник подрезделения', 'bossFullName')"></div>
                     </div>
                 </div>
             </div>
@@ -58,19 +58,12 @@
                       method="post"
                       enctype="multipart/form-data">
                     <div>
-                        <input type="hidden" th:field="*{employeeId}"> <!--.-->
-<!--                        <input type="hidden" th:field="*{createdAt}"> &lt;!&ndash;.&ndash;&gt;-->
-                        <input type="hidden" th:field="*{department}"> <!--.-->
-                        <input type="hidden" th:field="*{newDepartment}"> <!--.-->
-                        <input type="hidden" th:field="*{position}"> <!--.-->
-                        <input type="hidden" th:field="*{salary}"> <!--.-->
-
                         <div class="sm:col-span-2">
                             <label for="position"
                                    class="block text-sm font-medium text-gray-700">Должность</label>
                             <select id="position"
                                     class="max-w-lg block focus:ring-green-500 focus:border-green-500 w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md"
-                                    th:field="*{position}"> <!--.-->
+                                    th:field="*{newPosition}"> <!--.-->
                                 <option th:each="position : ${positionList}"
                                         th:text="${position.name}"
                                         th:value="${position.name}">Студент

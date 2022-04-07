@@ -30,4 +30,8 @@ public class DocumentVacationDto {
     private Date endAt;
     private String vacationType;
     private Boolean isApproved;
+
+    private String employeeFullName;
+    private String bossFullName;
+    private String hrFullName;
 }

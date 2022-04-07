@@ -27,4 +27,8 @@ public class DocumentDismissalDto {
     private Date dismissalDate;
     private String reason;
     private Boolean isApproved;
+
+    private String employeeFullName;
+    private String bossFullName;
+    private String hrFullName;
 }
