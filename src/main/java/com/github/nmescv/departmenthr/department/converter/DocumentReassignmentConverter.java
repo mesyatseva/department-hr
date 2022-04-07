@@ -45,12 +45,14 @@ public class DocumentReassignmentConverter implements Converter<DocumentReassign
 
         if (employee == null) {
             return null;
+        } else {
+            entity.setEmployee(employee);
         }
 
-        Employee boss = employeeRepository.findById(dto.getBossId()).orElse(null);
-
-        entity.setEmployee(employee);
-        entity.setBoss(boss);
+        if (dto.getBossId() != null) {
+            Employee boss = employeeRepository.findById(dto.getBossId()).orElse(null);
+            entity.setBoss(boss);
+        }
 
         if (dto.getHr() != null) {
             entity.setHr(employeeRepository.findById(dto.getHr()).orElse(null));
@@ -58,10 +60,14 @@ public class DocumentReassignmentConverter implements Converter<DocumentReassign
 
         entity.setDocumentStatus(documentStatusRepository.findByName(dto.getDocumentStatus()));
 
-        entity.setDepartment(employee.getDepartment());
-        entity.setPosition(employee.getPosition());
+        entity.setDepartment(departmentRepository.findByName(dto.getDepartment()));
+        entity.setPosition(positionRepository.findByName(dto.getPosition()));
         entity.setReassignmentDate(dto.getReassignmentDate());
-        entity.setNewPosition(positionRepository.findByName(dto.getNewPosition()));
+
+        if (dto.getNewPosition() != null) {
+            entity.setNewPosition(positionRepository.findByName(dto.getNewPosition()));
+        }
+
         entity.setNewDepartment(departmentRepository.findByName(dto.getNewDepartment()));
         entity.setSalary(dto.getSalary());
         entity.setIsApproved(dto.getIsApproved());
@@ -81,7 +87,10 @@ public class DocumentReassignmentConverter implements Converter<DocumentReassign
         dto.setCreatedAt(entity.getCreatedAt());
         dto.setOrderNumber(entity.getOrderNumber());
         dto.setEmployeeId(entity.getEmployee().getId());
-        dto.setBossId(entity.getBoss().getId());
+
+        if (entity.getBoss() != null) {
+            dto.setBossId(entity.getBoss().getId());
+        }
 
         if (entity.getHr() != null) {
             dto.setHr(entity.getHr().getId());
@@ -89,10 +98,19 @@ public class DocumentReassignmentConverter implements Converter<DocumentReassign
 
         dto.setDocumentStatus(entity.getDocumentStatus().getName());
         dto.setDepartment(entity.getDepartment().getName());
-        dto.setPosition(entity.getPosition().getName());
+
+        if (entity.getPosition() != null) {
+            dto.setPosition(entity.getPosition().getName());
+        }
         dto.setReassignmentDate(entity.getReassignmentDate());
-        dto.setNewPosition(entity.getNewPosition().getName());
-        dto.setNewDepartment(entity.getNewDepartment().getName());
+
+        if (entity.getNewPosition() != null) {
+            dto.setNewPosition(entity.getNewPosition().getName());
+        }
+
+        if (entity.getNewDepartment() != null) {
+            dto.setNewDepartment(entity.getNewDepartment().getName());
+        }
         dto.setSalary(entity.getSalary());
         dto.setIsApproved(entity.getIsApproved());
         return dto;

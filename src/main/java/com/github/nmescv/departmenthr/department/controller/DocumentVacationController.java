@@ -1,11 +1,13 @@
 package com.github.nmescv.departmenthr.department.controller;
 
-import com.github.nmescv.departmenthr.department.dto.DocumentReassignmentDto;
+import com.github.nmescv.departmenthr.department.dto.DocumentDismissalDto;
 import com.github.nmescv.departmenthr.department.dto.DocumentVacationDto;
+import com.github.nmescv.departmenthr.department.dto.StructureDto;
 import com.github.nmescv.departmenthr.department.repository.DepartmentRepository;
 import com.github.nmescv.departmenthr.department.repository.EmployeeRepository;
 import com.github.nmescv.departmenthr.department.repository.PositionRepository;
 import com.github.nmescv.departmenthr.department.service.DocumentVacationService;
+import com.github.nmescv.departmenthr.department.service.StructureService;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,15 +21,18 @@ import static com.github.nmescv.departmenthr.department.dictionary.RoleDict.*;
 @RequestMapping("/documents/vacation")
 public class DocumentVacationController {
 
+    private final StructureService structureService;
     private final DocumentVacationService documentVacationService;
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
     private final PositionRepository positionRepository;
 
-    public DocumentVacationController(DocumentVacationService documentVacationService,
+    public DocumentVacationController(StructureService structureService,
+                                      DocumentVacationService documentVacationService,
                                       EmployeeRepository employeeRepository,
                                       DepartmentRepository departmentRepository,
                                       PositionRepository positionRepository) {
+        this.structureService = structureService;
         this.documentVacationService = documentVacationService;
         this.employeeRepository = employeeRepository;
         this.departmentRepository = departmentRepository;
@@ -44,11 +49,22 @@ public class DocumentVacationController {
 
     @GetMapping("/new")
     @Secured(EMPLOYEE_ROLE)
-    public String showVacationDocumentCreatingForm(Model model) {
+    public String showVacationDocumentCreatingForm(Model model,
+                                                   Principal principal) {
+
+        StructureDto structure = structureService.makeStructureOfDepartment(principal.getName());
+
         model.addAttribute("positionList", positionRepository.findAll());
         model.addAttribute("departmentList", departmentRepository.findAll());
         model.addAttribute("employeeList", employeeRepository.findAll());
-        model.addAttribute("document", new DocumentVacationDto());
+        model.addAttribute("structure", structure);
+
+        DocumentVacationDto vacationDto = new DocumentVacationDto();
+        vacationDto.setBossId(structure.getBossId());
+        vacationDto.setDepartment(structure.getDepartment());
+        vacationDto.setPosition(structure.getPosition());
+
+        model.addAttribute("document", vacationDto);
         return "document_vacation/create_by_employee";
     }
 
@@ -56,8 +72,7 @@ public class DocumentVacationController {
     @Secured(EMPLOYEE_ROLE)
     public String createVacationDocumentRequestByEmployee(@ModelAttribute("document") DocumentVacationDto dto,
                                                           Principal principal) {
-        Long employeeId = employeeRepository.findByTabelNumber(principal.getName()).getId();
-        DocumentVacationDto createdDocument = documentVacationService.createRequestForVacation(dto, employeeId);
+        DocumentVacationDto createdDocument = documentVacationService.createRequestForVacation(dto, principal.getName());
         if (createdDocument == null) {
             return "document_vacation/create_by_employee";
         }

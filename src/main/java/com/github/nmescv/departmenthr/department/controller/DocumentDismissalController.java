@@ -1,13 +1,12 @@
 package com.github.nmescv.departmenthr.department.controller;
 
 import com.github.nmescv.departmenthr.department.dto.DocumentDismissalDto;
-import com.github.nmescv.departmenthr.department.dto.DocumentHiringDto;
-import com.github.nmescv.departmenthr.department.dto.DocumentVacationDto;
+import com.github.nmescv.departmenthr.department.dto.StructureDto;
 import com.github.nmescv.departmenthr.department.repository.DepartmentRepository;
 import com.github.nmescv.departmenthr.department.repository.EmployeeRepository;
 import com.github.nmescv.departmenthr.department.repository.PositionRepository;
 import com.github.nmescv.departmenthr.department.service.DocumentDismissalService;
-import com.github.nmescv.departmenthr.department.service.DocumentHiringService;
+import com.github.nmescv.departmenthr.department.service.StructureService;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,21 +15,23 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 import static com.github.nmescv.departmenthr.department.dictionary.RoleDict.*;
-import static com.github.nmescv.departmenthr.department.dictionary.RoleDict.HR_ROLE;
 
 @Controller
 @RequestMapping("/documents/dismissal")
 public class DocumentDismissalController {
 
+    private final StructureService structureService;
     private final DocumentDismissalService documentDismissalService;
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
     private final PositionRepository positionRepository;
 
-    public DocumentDismissalController(DocumentDismissalService documentDismissalService,
+    public DocumentDismissalController(StructureService structureService,
+                                       DocumentDismissalService documentDismissalService,
                                        EmployeeRepository employeeRepository,
                                        DepartmentRepository departmentRepository,
                                        PositionRepository positionRepository) {
+        this.structureService = structureService;
         this.documentDismissalService = documentDismissalService;
         this.employeeRepository = employeeRepository;
         this.departmentRepository = departmentRepository;
@@ -47,11 +48,21 @@ public class DocumentDismissalController {
 
     @GetMapping("/new")
     @Secured(EMPLOYEE_ROLE)
-    public String showDismissalDocumentCreatingForm(Model model) {
+    public String showDismissalDocumentCreatingForm(Model model,
+                                                    Principal principal) {
+
+        StructureDto structure = structureService.makeStructureOfDepartment(principal.getName());
         model.addAttribute("positionList", positionRepository.findAll());
         model.addAttribute("departmentList", departmentRepository.findAll());
         model.addAttribute("employeeList", employeeRepository.findAll());
-        model.addAttribute("document", new DocumentDismissalDto());
+        model.addAttribute("structure", structure);
+
+        DocumentDismissalDto documentDismissalDto = new DocumentDismissalDto();
+        documentDismissalDto.setBossId(structure.getBossId());
+        documentDismissalDto.setDepartment(structure.getDepartment());
+        documentDismissalDto.setPosition(structure.getPosition());
+
+        model.addAttribute("document", documentDismissalDto);
         return "document_dismissal/create_by_employee";
     }
 
@@ -59,8 +70,8 @@ public class DocumentDismissalController {
     @Secured(EMPLOYEE_ROLE)
     public String createDismissalDocumentRequestByEmployee(@ModelAttribute("document") DocumentDismissalDto dto,
                                                            Principal principal) {
-        Long employeeId = employeeRepository.findByTabelNumber(principal.getName()).getId();
-        DocumentDismissalDto createdDocument = documentDismissalService.createRequestToDismiss(dto, employeeId);
+
+        DocumentDismissalDto createdDocument = documentDismissalService.createRequestToDismiss(dto, principal.getName());
         if (createdDocument == null) {
             return "document_dismissal/create_by_employee";
         }

@@ -170,7 +170,10 @@ public class DocumentDismissalService {
      * @return документ с заявлением на увольнение
      */
     @Transactional
-    public DocumentDismissalDto createRequestToDismiss(DocumentDismissalDto dto, Long employeeId) {
+    public DocumentDismissalDto createRequestToDismiss(DocumentDismissalDto dto, String username) {
+
+        log.info(dto.toString());
+
         String orderNumber = UUID.randomUUID().toString();
         if (orderNumber.length() > 30) {
             orderNumber = orderNumber.substring(0, 30);
@@ -178,7 +181,7 @@ public class DocumentDismissalService {
 
         dto.setOrderNumber(orderNumber);
         dto.setDocumentStatus(DocumentStatusDict.OPEN.getStatus());
-        dto.setEmployeeId(employeeId);
+        dto.setEmployeeId(employeeRepository.findByTabelNumber(username).getId());
         dto.setCreatedAt(new Date());
 
         DocumentDismissal entity = documentDismissalConverter.toEntity(dto);

@@ -117,7 +117,7 @@ public class DocumentVacationService {
      * @return документ с заявлением на отпуск, статус "Открыт"
      */
     @Transactional
-    public DocumentVacationDto createRequestForVacation(DocumentVacationDto dto, Long employeeId) {
+    public DocumentVacationDto createRequestForVacation(DocumentVacationDto dto, String username) {
 
         String orderNumber = UUID.randomUUID().toString();
         if (orderNumber.length() > 30) {
@@ -125,7 +125,7 @@ public class DocumentVacationService {
         }
         dto.setOrderNumber(orderNumber);
         dto.setDocumentStatus(DocumentStatusDict.OPEN.getStatus());
-        dto.setEmployeeId(employeeId);
+        dto.setEmployeeId(employeeRepository.findByTabelNumber(username).getId());
         dto.setCreatedAt(new Date());
 
         DocumentVacation entity = documentVacationConverter.toEntity(dto);

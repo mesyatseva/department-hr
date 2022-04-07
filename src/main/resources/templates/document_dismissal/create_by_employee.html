@@ -7,14 +7,31 @@
         th:with="activeMenuItem='dismissal'">
 
 <head>
-    <title>Hiring</title>
+    <title>Увольнение</title>
 </head>
 <body>
 <div layout:fragment="page-content">
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
         <h1 class="text-2xl font-semibold text-gray-900"
-            th:text="#{document.hiring}">Увольнение с работы</h1>
+            th:text="#{document.dismissal}">Увольнение с работы</h1>
     </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+        <div class="py-4">
+            <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
+
+                <div th:if="${structure != null}" th:object="${structure}">
+                    <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                        <div th:replace="fragments/fields :: textfield('Подразделение', 'department')"></div>
+                        <div th:replace="fragments/fields :: textfield('Должность', 'position')"></div>
+                        <div th:replace="fragments/fields :: textfield('Начальник', 'bossFullName')"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
         <div class="py-4">
             <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
@@ -28,50 +45,13 @@
                         <div th:replace="fragments/forms :: fielderrors"></div>
                         <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                             <input type="hidden" th:field="*{id}"> <!--.-->
+                            <input type="hidden" th:field="*{department}"> <!--.-->
+                            <input type="hidden" th:field="*{position}"> <!--.-->
+                            <input type="hidden" th:field="*{bossId}"> <!--.-->
 
                             <!-- tag::textinputs[] -->
                             <div th:replace="fragments/forms :: dateinput(#{document.dismissal.date}, 'dismissalDate', 'sm:col-span-3')"></div>
-                            <div th:replace="fragments/forms :: textinput(#{document.dismissal.reason}, 'reason', 'sm:col-span-3')"></div>
-
-                            <div class="sm:col-span-2">
-                                <label for="employee"
-                                       class="block text-sm font-medium text-gray-700">Начальник</label>
-                                <select id="employee"
-                                        class="max-w-lg block focus:ring-green-500 focus:border-green-500 w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md"
-                                        th:field="*{bossId}"> <!--.-->
-                                    <option th:each="boss : ${employeeList}"
-                                            th:text="${boss.surname} + ' ' + ${boss.name} + ' ' + ${boss.middleName}"
-                                            th:value="${boss.getId()}">Greenland <!--.-->
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="sm:col-span-2">
-                                <label for="department"
-                                       class="block text-sm font-medium text-gray-700">Department</label>
-                                <select id="department"
-                                        class="max-w-lg block focus:ring-green-500 focus:border-green-500 w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md"
-                                        th:field="*{department}"> <!--.-->
-                                    <option th:each="department : ${departmentList}"
-                                            th:text="${department.name}"
-                                            th:value="${department.name}">Department - 001/02/32 - QA <!--.-->
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="sm:col-span-2">
-                                <label for="position" class="block text-sm font-medium text-gray-700">Position</label>
-                                <select id="position"
-                                        class="max-w-lg block focus:ring-green-500 focus:border-green-500 w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md"
-                                        th:field="*{position}"> <!--.-->
-                                    <option th:each="position : ${positionList}"
-                                            th:text="${position.name}"
-                                            th:value="${position.name}">Team Leader <!--.-->
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="sm:col-span-2"></div>
+                            <div th:replace="fragments/forms :: textarea(#{document.dismissal.reason}, 'reason', 'sm:col-span-3')"></div>
                             <!-- end::textinputs[] -->
                         </div>
                     </div>

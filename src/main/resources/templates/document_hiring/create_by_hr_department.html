@@ -46,7 +46,6 @@
                 <div th:if="${document != null}" th:object="${document}">
                     <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
 
-                        <div th:hidden=""
                         <div th:replace="fragments/fields :: textfield('Номер документа', 'orderNumber')"></div>
                         <div th:replace="fragments/fields :: textfield('Создан', 'createdAt')"></div>
                         <div th:replace="fragments/fields :: textfield('Статус документа', 'documentStatus')"></div>
