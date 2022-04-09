@@ -8,110 +8,37 @@
 <head>
     <meta charset="UTF-8">
     <title>Профиль сотрудника</title>
-
-    <link rel="stylesheet"
-          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-          crossorigin="anonymous">
 </head>
 <body>
 
 <div layout:fragment="page-content">
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-        <div class="py-4">
-            <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
-                <div class="container">
-                    <div class="row">
-                        <div th:if="${employee != null}" class="col-md-9 col-md-offset-3" th:object="${employee}">
+        <h1 class="text-2xl font-semibold text-gray-900"
+            th:text="#{document.employee}">Документ: Отпуск</h1>
+    </div>
 
-                            <h2> Профиль сотрудника </h2>
+    <div th:if="${employee != null}" th:object="${employee}">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+            <div class="py-4">
 
-                            <div class="form-group">
-                                <label class="control-label" for="tabelNumber">Табельный номер</label>
-                                <p id="tabelNumber" class="form-control" th:text="*{tabelNumber}">Табельный номер</p>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label" for="surname">Фамилия</label>
-                                <p id="surname" class="form-control" th:text="*{surname}">Фамилия сотрудника</p>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label" for="name">Имя</label>
-                                <p id="name" class="form-control" th:text="*{name}">Имя сотрудника</p>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label" for="middleName">Отчество</label>
-                                <p id="middleName" class="form-control" th:text="*{middleName}">Отчество сотрудника</p>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label" for="birthday">День рождения</label>
-                                <p id="birthday" class="form-control" th:text="*{birthday}">01.01.0000</p>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label" for="citizenship">Гражданство</label>
-                                <p id="citizenship" class="form-control" th:text="*{citizenship}">Гражданин мира</p>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label" for="passSerie">Серия паспорта</label>
-                                <p id="passSerie" class="form-control" th:text="*{passSeries}">Серия паспорта</p>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label" for="passNumber">Номер паспорта</label>
-                                <p id="passNumber" class="form-control" th:text="*{passNumber}">Номер паспорта</p>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label" for="inn">ИНН (12 цифр)</label>
-                                <p id="inn" class="form-control" th:text="*{inn}">ИНН (12 цифр)</p>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label" for="snils">СНИЛС (11 цифр)</label>
-                                <p id="snils" class="form-control" th:text="*{snils}">ИНН (12 цифр)</p>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label" for="position">Должность</label>
-                                <p id="position" class="form-control" th:text="*{position}">Должность</p>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label" for="department">Подразделение</label>
-                                <p id="department" class="form-control" th:text="*{department}">Подразделение</p>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label" for="university">Университет</label>
-                                <p id="university" class="form-control" th:text="*{university}">Университет</p>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label" for="education">Степень образования</label>
-                                <p id="education" class="form-control" th:text="*{education}">Степень образования</p>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label" for="speciality">Специальность</label>
-                                <p id="speciality" class="form-control" th:text="*{speciality}">Специальность</p>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label" for="telephone">Телефон</label>
-                                <p id="telephone" class="form-control" th:text="*{telephone}">Телефон</p>
-                            </div>
-                        </div>
-
-                        <div th:if="${employee == null}" class="col-md-9 col-md-offset-3">
-                            <div class="form-group">
-                                <h2 th:text="${notFound}">Отсуствует сотрудник</h2>>
-                            </div>
-                        </div>
+                <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
+                    <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                        <div th:replace="fragments/fields :: textfield('Фамилия', 'surname')"></div>
+                        <div th:replace="fragments/fields :: textfield('Имя', 'name')"></div>
+                        <div th:replace="fragments/fields :: textfield('Отчество', 'middleName')"></div>
+                        <div th:replace="fragments/fields :: textfield('Дата рождения', 'birthday')"></div>
+                        <div th:replace="fragments/fields :: textfield('Гражданство', 'citizenship')"></div>
+                        <div th:replace="fragments/fields :: textfield('Серия', 'passSeries')"></div>
+                        <div th:replace="fragments/fields :: textfield('Номер', 'passNumber')"></div>
+                        <div th:replace="fragments/fields :: textfield('ИНН', 'inn')"></div>
+                        <div th:replace="fragments/fields :: textfield('СНИЛС', 'snils')"></div>
+                        <div th:replace="fragments/fields :: textfield('Университет', 'university')"></div>
+                        <div th:replace="fragments/fields :: textfield('Степень образования', 'education')"></div>
+                        <div th:replace="fragments/fields :: textfield('Специальность', 'speciality')"></div>
+                        <div th:replace="fragments/fields :: textfield('Телефон', 'telephone')"></div>
+                        <div th:replace="fragments/fields :: textfield('Подразделение', 'department')"></div>
+                        <div th:replace="fragments/fields :: textfield('Должность', 'position')"></div>
                     </div>
                 </div>
             </div>

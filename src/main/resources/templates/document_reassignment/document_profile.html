@@ -88,7 +88,7 @@
                         <div th:replace="fragments/fields :: textfield('Текущая должность', 'position')"></div>
                         <div th:replace="fragments/fields :: textfield('Сотрудник', 'employeeFullName')"></div>
                         <div th:if="${document.hr != null}">
-                            <div th:replace="fragments/fields :: textfield('HR', 'hr')"></div>
+                            <div th:replace="fragments/fields :: textfield('HR', 'hrFullName')"></div>
                         </div>
                     </div>
                 </div>

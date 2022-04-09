@@ -91,7 +91,7 @@
                         <div th:replace="fragments/fields :: textfield('Сотрудник', 'employeeFullName')"></div>
                         <div th:replace="fragments/fields :: textfield('Начальник', 'bossFullName')"></div>
                         <div th:if="${document.hr != null}">
-                            <div th:replace="fragments/fields :: textfield('HR', 'hr')"></div>
+                            <div th:replace="fragments/fields :: textfield('HR', 'hrFullName')"></div>
                         </div>
                     </div>
                 </div>

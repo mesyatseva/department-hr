@@ -49,16 +49,16 @@
                         <div th:replace="fragments/fields :: textfield('Номер документа', 'orderNumber')"></div>
                         <div th:replace="fragments/fields :: textfield('Создан', 'createdAt')"></div>
                         <div th:replace="fragments/fields :: textfield('Статус документа', 'documentStatus')"></div>
-                        <div th:replace="fragments/fields :: textfield('Сотрудник ID', 'employeeId')"></div>
+                        <div th:replace="fragments/fields :: textfield('Сотрудник ID', 'employeeFullName')"></div>
                         <div th:replace="fragments/fields :: textfield('Дата приема на работу', 'hiringDate')"></div>
                         <div th:replace="fragments/fields :: textfield('Зарплата', 'salary')"></div>
 
                         <div th:if="${document.bossId != null}">
-                            <div th:replace="fragments/fields :: textfield('Начальник ID', 'bossId')"></div>
+                            <div th:replace="fragments/fields :: textfield('Начальник ID', 'bossFullName')"></div>
                         </div>
 
                         <div th:if="${document.hr != null}">
-                            <div th:replace="fragments/fields :: textfield('HR', 'hr')"></div>
+                            <div th:replace="fragments/fields :: textfield('HR', 'hrFullName')"></div>
                         </div>
                     </div>
                 </div>

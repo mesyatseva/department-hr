@@ -41,7 +41,6 @@ public class DocumentDismissalConverter implements Converter<DocumentDismissal, 
         }
 
         Employee boss = employeeRepository.findById(dto.getBossId()).orElse(null);
-        dto.setEmployeeFullName(EmployeeUtils.fullName(entity.getEmployee()));
 
         entity.setEmployee(employee);
         entity.setBoss(boss);
@@ -78,6 +77,7 @@ public class DocumentDismissalConverter implements Converter<DocumentDismissal, 
         dto.setEmployeeFullName(EmployeeUtils.fullName(entity.getEmployee()));
         dto.setBossId(entity.getBoss().getId());
         dto.setBossFullName(EmployeeUtils.fullName(entity.getBoss()));
+        dto.setEmployeeFullName(EmployeeUtils.fullName(entity.getEmployee()));
 
         if (entity.getHr() != null) {
             dto.setHr(entity.getHr().getId());

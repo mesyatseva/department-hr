@@ -85,18 +85,7 @@ public class EmployeeController {
         if (savedEmployee == null) {
             return "redirect:/employees/new";
         }
-        return "redirect:/employees/profile/" + employeeDto.getTabelNumber();
-    }
-
-    @GetMapping("/profile/{tabelNumber}")
-    public String showProfile(Model model, @PathVariable("tabelNumber") String tabelNumber) {
-        EmployeeDto employee = employeeService.showProfileByTableNumber(tabelNumber);
-        if (employee == null) {
-            String notFound = "Отсутствует сотрудник с номером - " + tabelNumber;
-            model.addAttribute("notFound", notFound);
-        }
-        model.addAttribute("employee", employee);
-        return "employee/profile";
+        return "redirect:/employees/" + employeeDto.getId();
     }
 
     @GetMapping("/{id}")
