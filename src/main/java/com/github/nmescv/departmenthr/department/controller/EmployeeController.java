@@ -85,7 +85,7 @@ public class EmployeeController {
         if (savedEmployee == null) {
             return "redirect:/employees/new";
         }
-        return "redirect:/employees/" + employeeDto.getId();
+        return "redirect:/employees/" +  savedEmployee.getId();
     }
 
     @GetMapping("/{id}")
